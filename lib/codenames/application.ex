@@ -17,6 +17,7 @@ defmodule Codenames.Application do
       # Start Finch
       {Finch, name: Codenames.Finch},
       # Start the Endpoint (http/https)
+      CodenamesWeb.Presence,
       CodenamesWeb.Endpoint
       # Start a worker by calling: Codenames.Worker.start_link(arg)
       # {Codenames.Worker, arg}
