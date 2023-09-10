@@ -18,6 +18,7 @@ defmodule CodenamesWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/game", GameLive.Index, :index
   end
 
   # Other scopes may use custom stacks.
