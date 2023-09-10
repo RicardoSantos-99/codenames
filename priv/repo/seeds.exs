@@ -10,6 +10,7 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+alias Codenames.Repo
 alias Codenames.Words.Word
 
 words = [
@@ -87,5 +88,4 @@ words = [
   %Word{term: "Zumbi"}
 ]
 
-alias Codenames.Repo
 Enum.each(words, fn word -> Repo.insert!(word) end)
