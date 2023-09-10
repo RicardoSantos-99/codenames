@@ -18,6 +18,7 @@ defmodule Codenames.Application do
       {Finch, name: Codenames.Finch},
       # Start the Endpoint (http/https)
       CodenamesWeb.Presence,
+      {Registry, keys: :unique, name: Codenames.GameRegistry},
       CodenamesWeb.Endpoint
       # Start a worker by calling: Codenames.Worker.start_link(arg)
       # {Codenames.Worker, arg}

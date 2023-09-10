@@ -1,4 +1,31 @@
-defmodule Codenames.Board do
+defmodule Codenames.Game.Match do
+  defstruct [:room_id, :players, :board, :round, :admin, :total_players]
+
+  alias Codenames.Words
+
+  def new(room_id, admin, board) do
+    %__MODULE__{
+      room_id: room_id,
+      players: [admin],
+      board: board,
+      round: 0,
+      admin: admin,
+      total_players: 1
+    }
+  end
+
+  def add_player(match, email) when is_binary(email) do
+    if Enum.member?(match.players, email) do
+      match
+    else
+      %__MODULE__{
+        match
+        | players: [email | match.players],
+          total_players: match.total_players + 1
+      }
+    end
+  end
+
   def build_game_board do
     all_words = random_words_from_db()
 
@@ -32,7 +59,7 @@ defmodule Codenames.Board do
 
   defp random_words_from_db do
     all_words =
-      Codenames.Words.list_words()
+      Words.list_words()
       |> Enum.map(fn word -> word.term end)
 
     Enum.take_random(all_words, 25)
