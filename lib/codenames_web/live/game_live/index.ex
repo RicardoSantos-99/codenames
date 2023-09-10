@@ -3,37 +3,53 @@ defmodule CodenamesWeb.GameLive.Index do
 
   import CodenamesWeb.Components.Card
   import CodenamesWeb.Components.Team
+  alias CodenamesWeb.Presence
 
   @impl true
   def mount(_params, _session, socket) do
+    user = socket.assigns.current_user
+
     Phoenix.PubSub.subscribe(Codenames.PubSub, "game_room")
+
+    Presence.track(
+      self(),
+      "game_room",
+      user.email,
+      user
+    )
+
+    CodenamesWeb.Endpoint.subscribe("game_room")
+    # notify users that has a presence
+
+    CodenamesWeb.Endpoint.broadcast("game_room", "presence_diff", %{})
+
+    socket = assign(socket, :user_emails, fetch_current_emails())
     socket = assign(socket, :words, random_words_from_db())
     socket = assign(socket, :board, build_game_board())
 
     {:ok, socket}
   end
 
-  @impl true
-  def handle_info({:user_joined, user}, socket) do
-    users = socket.assigns[:users] || []
-    {:noreply, assign(socket, :users, [user | users])}
-  end
-
-  def handle_info({:user_left, user}, socket) do
-    users = socket.assigns[:users] || []
-    updated_users = List.delete(users, user)
-    {:noreply, assign(socket, :users, updated_users)}
+  defp fetch_current_emails() do
+    CodenamesWeb.Presence.list("game_room")
+    |> Enum.map(fn {email, _meta} -> email end)
   end
 
   @impl true
-  def handle_event("join", %{"user" => user}, socket) do
-    Phoenix.PubSub.broadcast(Codenames.PubSub, "game_room", {:user_joined, user})
-    {:noreply, socket}
+  def handle_info(%{event: "presence_diff"}, socket) do
+    {:noreply, reload_users(socket)}
   end
 
-  def handle_event("leave", %{"user" => user}, socket) do
-    Phoenix.PubSub.broadcast(Codenames.PubSub, "game_room", {:user_left, user})
-    {:noreply, socket}
+  def reload_users(socket) do
+    users =
+      Presence.list("game_room")
+      |> Enum.map(fn {_user_id, data} ->
+        data[:metas]
+        |> List.first()
+      end)
+
+    socket
+    |> assign(:users, users)
   end
 
   defp random_words_from_db do
@@ -45,7 +61,6 @@ defmodule CodenamesWeb.GameLive.Index do
   defp build_game_board do
     all_words = random_words_from_db()
 
-    # Supondo que você tem um time que começa (azul ou vermelho)
     starting_team = Enum.random([:blue, :red])
 
     {blue_words, after_blue} =
