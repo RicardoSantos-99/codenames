@@ -59,6 +59,52 @@ defmodule Codenames.Game.Match do
     match.blue_team.spymaster == email || match.red_team.spymaster == email
   end
 
+  defp put_in_team(match, email, team) do
+    Map.update!(match, team, fn team ->
+      %{team | players: [email | team.players]}
+    end)
+  end
+
+  defp remove_from_team(match, email, team) do
+    Map.update!(match, team, fn team ->
+      %{team | players: List.delete(team.players, email)}
+    end)
+  end
+
+  defp already_in_team?(team, match, email) do
+    Enum.member?(match[team].players, email)
+  end
+
+  def join_operative(match, email, "blue") do
+    if player_is_spymaster?(match, email) do
+      {:error, "You are already a spymaster"}
+    else
+      if already_in_team?(:blue_team, match, email) do
+        {:error, "You are already in the blue team"}
+      else
+        {:ok,
+         match
+         |> put_in_team(email, :blue_team)
+         |> remove_from_team(email, :red_team)}
+      end
+    end
+  end
+
+  def join_operative(match, email, "red") do
+    if player_is_spymaster?(match, email) do
+      {:error, "You are already a spymaster"}
+    else
+      if already_in_team?(:red_team, match, email) do
+        {:error, "You are already in the red team"}
+      else
+        {:ok,
+         match
+         |> put_in_team(email, :red_team)
+         |> remove_from_team(email, :blue_team)}
+      end
+    end
+  end
+
   def join_spymaster(match, email, "blue") when is_nil(match.blue_team.spymaster) do
     if player_is_spymaster?(match, email) do
       match

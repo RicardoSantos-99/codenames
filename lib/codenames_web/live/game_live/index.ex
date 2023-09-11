@@ -11,7 +11,7 @@ defmodule CodenamesWeb.GameLive.Index do
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
 
-    room_id = '1'
+    room_id = ~c"1"
 
     board = setup_board_and_server(room_id, user)
 
@@ -35,6 +35,19 @@ defmodule CodenamesWeb.GameLive.Index do
     # TODO: Update the board in the Presence
 
     {:noreply, assign(socket, :board, board)}
+  end
+
+  @impl true
+  def handle_event("operative", %{"team" => team}, socket) do
+    user = socket.assigns.current_user
+
+    case Match.join_operative(socket.assigns.board, user.email, team) do
+      {:error, message} ->
+        {:noreply, socket |> put_flash(:error, message)}
+
+      {:ok, board} ->
+        {:noreply, socket |> assign(:board, board)}
+    end
   end
 
   @impl true
