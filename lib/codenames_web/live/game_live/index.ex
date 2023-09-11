@@ -31,8 +31,7 @@ defmodule CodenamesWeb.GameLive.Index do
     user = socket.assigns.current_user
 
     board = Match.join_spymaster(socket.assigns.board, user.email, team)
-
-    # TODO: Update the board in the Presence
+    update_board("game_room:1", board)
 
     {:noreply, assign(socket, :board, board)}
   end
@@ -46,6 +45,7 @@ defmodule CodenamesWeb.GameLive.Index do
         {:noreply, socket |> put_flash(:error, message)}
 
       {:ok, board} ->
+        update_board("game_room:1", board)
         {:noreply, socket |> assign(:board, board)}
     end
   end
@@ -57,6 +57,14 @@ defmodule CodenamesWeb.GameLive.Index do
       |> Enum.map(fn {_user_id, data} -> List.first(data[:metas]).email end)
 
     {:noreply, socket |> assign(:user_emails, users)}
+  end
+
+  def handle_info({:update_board, board}, socket) do
+    {:noreply, socket |> assign(:board, board)}
+  end
+
+  def update_board(channel, board) do
+    Phoenix.PubSub.broadcast(Codenames.PubSub, channel, {:update_board, board})
   end
 
   defp setup_board_and_server(room_id, user) do
