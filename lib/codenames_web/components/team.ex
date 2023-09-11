@@ -16,7 +16,11 @@ defmodule CodenamesWeb.Components.Team do
             <p class="text-white"><%= join_spymaster(@board, @team) %></p>
           </div>
           <div class="mt-4">
-            <h3 class="text-lg font-bold text-white underline">Operatives</h3>
+            <button phx-click="operative" phx-value-team="<%= @team %>">
+              <h3 class="text-lg font-bold text-white underline">
+                Operatives
+              </h3>
+            </button>
             <ul>
               <%= if @team == "blue" do
                 for _ <- @board.blue_team.players do
