@@ -23,10 +23,17 @@ defmodule Codenames.Game.Match do
         | players: [email | match.players],
           total_players: match.total_players + 1
       }
+      |> Map.update!(:board, fn board ->
+        if board.blue_team.players <= board.red_team.players do
+          %{board | blue_team: %{board.blue_team | players: [email | board.blue_team.players]}}
+        else
+          %{board | red_team: %{board.red_team | players: [email | board.red_team.players]}}
+        end
+      end)
     end
   end
 
-  def build_game_board do
+  def build_game_board(user) do
     all_words = random_words_from_db()
 
     starting_team = Enum.random([:blue, :red])
@@ -42,10 +49,26 @@ defmodule Codenames.Game.Match do
 
     %{
       starting_team: starting_team,
-      blue: blue_words,
-      red: red_words,
+      blue_team: %{words: blue_words, players: [user.email], spymaster: nil},
+      red_team: %{words: red_words, players: [], spymaster: nil},
       words: all_words(red_words, blue_words, neutral_words, black_word) |> Enum.shuffle()
     }
+  end
+
+  def join_spymaster(match, email, "blue") when is_nil(match.blue_team.spymaster) do
+    Map.update!(match, :blue_team, fn team ->
+      %{team | spymaster: email, players: List.delete(team.players, email)}
+    end)
+  end
+
+  def join_spymaster(match, email, "red") when is_nil(match.red_team.spymaster) do
+    Map.update!(match, :red_team, fn team ->
+      %{team | spymaster: email, players: List.delete(team.players, email)}
+    end)
+  end
+
+  def join_spymaster(match, _email, _) do
+    match
   end
 
   def all_words(red, blue, neutral, black) do
