@@ -27,6 +27,17 @@ defmodule CodenamesWeb.GameLive.Index do
   end
 
   @impl true
+  def handle_event("spymaster", %{"team" => team}, socket) do
+    user = socket.assigns.current_user
+
+    board = Match.join_spymaster(socket.assigns.board, user.email, team)
+
+    # TODO: Update the board in the Presence
+
+    {:noreply, assign(socket, :board, board)}
+  end
+
+  @impl true
   def handle_info(%Broadcast{event: "presence_diff", payload: _payload, topic: _topic}, socket) do
     users =
       Presence.list("game_room:#{1}")
@@ -40,7 +51,7 @@ defmodule CodenamesWeb.GameLive.Index do
       server = Server.join(room_id, user.email)
       server.board
     else
-      board = Match.build_game_board()
+      board = Match.build_game_board(user)
       Server.start_link(room_id, user.email, board)
       board
     end
