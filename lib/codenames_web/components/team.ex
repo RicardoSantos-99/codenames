@@ -15,12 +15,6 @@ defmodule CodenamesWeb.Components.Team do
           </button>
             <p class="text-white">
 
-            <%= if @team == "blue" do
-              if @board.blue_team.spymaster, do: "🤖", else: ""
-              else
-                if @board.red_team.spymaster, do: "🤖", else: ""
-              end
-            %>
 
             </p>
           </div>
