@@ -55,16 +55,28 @@ defmodule Codenames.Game.Match do
     }
   end
 
+  def player_is_spymaster?(match, email) do
+    match.blue_team.spymaster == email || match.red_team.spymaster == email
+  end
+
   def join_spymaster(match, email, "blue") when is_nil(match.blue_team.spymaster) do
-    Map.update!(match, :blue_team, fn team ->
-      %{team | spymaster: email, players: List.delete(team.players, email)}
-    end)
+    if player_is_spymaster?(match, email) do
+      match
+    else
+      Map.update!(match, :blue_team, fn team ->
+        %{team | spymaster: email, players: List.delete(team.players, email)}
+      end)
+    end
   end
 
   def join_spymaster(match, email, "red") when is_nil(match.red_team.spymaster) do
-    Map.update!(match, :red_team, fn team ->
-      %{team | spymaster: email, players: List.delete(team.players, email)}
-    end)
+    if player_is_spymaster?(match, email) do
+      match
+    else
+      Map.update!(match, :red_team, fn team ->
+        %{team | spymaster: email, players: List.delete(team.players, email)}
+      end)
+    end
   end
 
   def join_spymaster(match, _email, _) do
