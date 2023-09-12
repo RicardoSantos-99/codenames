@@ -101,4 +101,27 @@ defmodule Codenames.Words do
   def change_word(%Word{} = word, attrs \\ %{}) do
     Word.changeset(word, attrs)
   end
+
+  def random_words_from_db do
+    all_words =
+      list_words()
+      |> Enum.map(fn word -> word.term end)
+
+    Enum.take_random(all_words, 25)
+  end
+
+  def take_random_words(words, count) do
+    chosen_words = Enum.take_random(words, count)
+    remaining_words = Enum.reject(words, fn word -> word in chosen_words end)
+    {chosen_words, remaining_words}
+  end
+
+  def all_words(red, blue, neutral, black) do
+    red = Enum.map(red, fn word -> {word, :red} end)
+    blue = Enum.map(blue, fn word -> {word, :blue} end)
+    neutral = Enum.map(neutral, fn word -> {word, :neutral} end)
+    black = [{black, :black}]
+
+    red ++ blue ++ neutral ++ black
+  end
 end

@@ -2,8 +2,9 @@ defmodule Codenames.Game.Server do
   use GenServer
 
   alias Codenames.Game.Match
+  alias Codenames.Game.Board
 
-  def start_link(room_id, email, board) do
+  def start_link(room_id, email, %Board{} = board) do
     initial_match = Match.new(room_id, email, board)
 
     GenServer.start_link(__MODULE__, initial_match, name: via_tuple(room_id))
@@ -12,7 +13,8 @@ defmodule Codenames.Game.Server do
   def init(match), do: {:ok, match}
 
   def handle_call({:join, email}, _from, match) do
-    {:reply, Match.add_player(match, email), Match.add_player(match, email)}
+    match = Match.join(match, email)
+    {:reply, match, match}
   end
 
   def handle_call(:get_state, _from, state) do

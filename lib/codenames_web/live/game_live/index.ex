@@ -3,7 +3,7 @@ defmodule CodenamesWeb.GameLive.Index do
 
   import CodenamesWeb.Components.{Card, Team}
   alias CodenamesWeb.{Presence}
-  alias Codenames.Game.{Server, Match}
+  alias Codenames.Game.{Board, Server, Match}
   alias Phoenix.Socket.Broadcast
   alias Phoenix.PubSub
 
@@ -30,7 +30,7 @@ defmodule CodenamesWeb.GameLive.Index do
   def handle_event("spymaster", %{"team" => team}, socket) do
     user = socket.assigns.current_user
 
-    board = Match.join_spymaster(socket.assigns.board, user.email, team)
+    board = Board.join_spymaster(socket.assigns.board, user.email, String.to_atom(team))
     update_board("game_room:1", board)
 
     {:noreply, assign(socket, :board, board)}
@@ -40,14 +40,10 @@ defmodule CodenamesWeb.GameLive.Index do
   def handle_event("operative", %{"team" => team}, socket) do
     user = socket.assigns.current_user
 
-    case Match.join_operative(socket.assigns.board, user.email, team) do
-      {:error, message} ->
-        {:noreply, socket |> put_flash(:error, message)}
+    board = Board.join_operative(socket.assigns.board, user.email, String.to_atom(team))
 
-      {:ok, board} ->
-        update_board("game_room:1", board)
-        {:noreply, socket |> assign(:board, board)}
-    end
+    update_board("game_room:1", board)
+    {:noreply, socket |> assign(:board, board)}
   end
 
   @impl true
@@ -64,17 +60,20 @@ defmodule CodenamesWeb.GameLive.Index do
   end
 
   def update_board(channel, board) do
-    Phoenix.PubSub.broadcast(Codenames.PubSub, channel, {:update_board, board})
+    PubSub.broadcast(Codenames.PubSub, channel, {:update_board, board})
   end
 
   defp setup_board_and_server(room_id, user) do
-    if Server.server_exists?(room_id) do
-      server = Server.join(room_id, user.email)
-      server.board
-    else
-      board = Match.build_game_board(user)
-      Server.start_link(room_id, user.email, board)
-      board
+    case Server.server_exists?(room_id) do
+      true ->
+        %Match{board: board} = Server.join(room_id, user.email)
+        update_board("game_room:1", board)
+        board
+
+      false ->
+        %Board{} = board = Board.build_game_board(user)
+        Server.start_link(room_id, user.email, board)
+        board
     end
   end
 end
