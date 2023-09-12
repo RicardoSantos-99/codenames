@@ -38,7 +38,12 @@ defmodule CodenamesWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{CodenamesWeb.UserAuth, :ensure_authenticated}] do
-      live("/", GameLive.Index, :index)
+      live "/rooms", RoomLive.Index, :index
+      live "/rooms/new", RoomLive.Index, :new
+      live "/rooms/:id/edit", RoomLive.Index, :edit
+
+      live "/rooms/:id", RoomLive.Show, :show
+      live "/rooms/:id/show/edit", RoomLive.Show, :edit
       live("/users/settings", UserSettingsLive, :edit)
       live("/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email)
     end

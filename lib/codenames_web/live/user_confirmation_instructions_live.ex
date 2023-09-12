@@ -46,6 +46,6 @@ defmodule CodenamesWeb.UserConfirmationInstructionsLive do
     {:noreply,
      socket
      |> put_flash(:info, info)
-     |> redirect(to: ~p"/")}
+     |> redirect(to: ~p"/rooms")}
   end
 end
