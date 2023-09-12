@@ -116,11 +116,13 @@ defmodule Codenames.Words do
     {chosen_words, remaining_words}
   end
 
+  defp build_word_map(word, color), do: %{word: word, color: color, revealed: false}
+
   def all_words(red, blue, neutral, black) do
-    red = Enum.map(red, fn word -> {word, :red} end)
-    blue = Enum.map(blue, fn word -> {word, :blue} end)
-    neutral = Enum.map(neutral, fn word -> {word, :neutral} end)
-    black = [{black, :black}]
+    red = Enum.map(red, &build_word_map(&1, :red))
+    blue = Enum.map(blue, &build_word_map(&1, :blue))
+    neutral = Enum.map(neutral, &build_word_map(&1, :neutral))
+    black = Enum.map(black, &build_word_map(&1, :black))
 
     red ++ blue ++ neutral ++ black
   end
