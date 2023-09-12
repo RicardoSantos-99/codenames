@@ -62,6 +62,14 @@ defmodule Codenames.Game.Board do
     end
   end
 
+  def already_on_match?(board, email) do
+    already_with_operative?(board, email) || already_with_spymaster?(board, email)
+  end
+
+  def already_with_operative?(board, email) do
+    Enum.member?(board.blue_team.players, email) || Enum.member?(board.red_team.players, email)
+  end
+
   def already_with_spymaster?(board, email) do
     board.blue_team.spymaster == email || board.red_team.spymaster == email
   end

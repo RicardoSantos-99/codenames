@@ -13,8 +13,12 @@ defmodule Codenames.Game.Server do
   def init(match), do: {:ok, match}
 
   def handle_call({:join, email}, _from, match) do
-    match = Match.join(match, email)
-    {:reply, match, match}
+    if Board.already_on_match?(match.board, email) do
+      {:reply, match, match}
+    else
+      match = Match.join(match, email)
+      {:reply, match, match}
+    end
   end
 
   def handle_call(:get_state, _from, state) do

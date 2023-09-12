@@ -11,7 +11,7 @@ defmodule CodenamesWeb.GameLive.Index do
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
 
-    room_id = ~c"1"
+    room_id = "1"
 
     board = setup_board_and_server(room_id, user)
 
