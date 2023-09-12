@@ -7,15 +7,23 @@ defmodule CodenamesWeb.Components.Card do
     <div class="grid grid-cols-5 gap-2 p-1">
       <%= for %{word: word, color: color, revealed: _revealed} <- @board.words do %>
         <div class="w-32 h-32 rounded-lg shadow-md flex items-center justify-center <%= get_color(@board, @user.email, color) %>">
-          <p class="text-xl font-bold uppercase <%= color == :black && "text-white" %>"><%= word %></p>
+          <p
+            class="text-xl font-bold uppercase <%= (color == :black && user_is_spymaster?(@board, @user.email)) && "text-white" %>"
+          >
+            <%= word %>
+          </p>
         </div>
       <% end %>
     </div>
     """
   end
 
+  defp user_is_spymaster?(board, email) do
+    Board.already_with_spymaster?(board, email)
+  end
+
   def get_color(board, email, color) do
-    if not Board.already_with_spymaster?(board, email) do
+    unless user_is_spymaster?(board, email) do
       color_class(:neutral)
     else
       color_class(color)
