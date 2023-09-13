@@ -6,12 +6,7 @@ defmodule CodenamesWeb.Components.Team do
   """
   use Phoenix.Component
 
-  alias Codenames.Game.{Team, Board}
-
-  attr :board, :map, required: true
-  attr :user, :map, required: true
-  attr :team, :string, required: true
-  attr :module, :atom, default: Team
+  alias Codenames.Server.Board
 
   def team(assigns) do
     ~L"""

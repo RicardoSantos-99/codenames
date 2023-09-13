@@ -25,7 +25,7 @@ defmodule Codenames.Application do
 
       # Start a worker by calling: Codenames.Worker.start_link(arg)
       # {Codenames.Worker, arg}
-      Codenames.Game.Manager
+      Codenames.Server.Manager
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

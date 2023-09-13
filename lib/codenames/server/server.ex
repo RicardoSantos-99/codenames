@@ -1,11 +1,11 @@
-defmodule Codenames.Game.Server do
+defmodule Codenames.Server.Server do
   @moduledoc """
   Server context
   """
   use GenServer
 
-  alias Codenames.Game.Match
-  alias Codenames.Game.Board
+  alias Codenames.Server.Match
+  alias Codenames.Server.Board
   alias Codenames.GameRegistry
 
   def start_link([room_id, email, %Board{} = board]) do
@@ -25,12 +25,21 @@ defmodule Codenames.Game.Server do
     end
   end
 
+  def handle_call({:start_game, email}, _from, match) do
+    match = Match.start_match(match, email)
+    {:reply, match, match}
+  end
+
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
   end
 
   def join(room_id, email) do
     GenServer.call(via_tuple(room_id), {:join, email})
+  end
+
+  def start_game(room_id, email) do
+    GenServer.call(via_tuple(room_id), {:start_game, email})
   end
 
   def get_state(room_id) do

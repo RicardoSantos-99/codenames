@@ -1,9 +1,11 @@
-defmodule Codenames.Game.Match do
+defmodule Codenames.Server.Match do
   @moduledoc """
   Match context
   """
-  defstruct [:room_id, :players, :board, :round, :admin, :total_players]
-  alias Codenames.Game.Board
+  defstruct [:room_id, :players, :board, :round, :admin, :total_players, :started]
+  alias Codenames.Server.Board
+
+  defguard is_admin?(match, email) when match.admin == email
 
   def new(room_id, admin, %Board{} = board) do
     %__MODULE__{
@@ -12,7 +14,8 @@ defmodule Codenames.Game.Match do
       board: board,
       round: 0,
       admin: admin,
-      total_players: 1
+      total_players: 1,
+      started: false
     }
   end
 
@@ -41,6 +44,12 @@ defmodule Codenames.Game.Match do
         add_player(match, email)
     end
   end
+
+  def start_match(match, email) when is_admin?(match, email) do
+    %{match | started: true}
+  end
+
+  def start_match(match, _email), do: match
 
   def player_is_spymaster?(match, email) do
     match.blue_team.spymaster == email || match.red_team.spymaster == email

@@ -1,10 +1,10 @@
-defmodule Codenames.Game.Manager do
+defmodule Codenames.Server.Manager do
   @moduledoc """
   Manager context
   """
   use DynamicSupervisor
 
-  alias Codenames.Game.Server
+  alias Codenames.Server.Server
 
   def start_link do
     DynamicSupervisor.start_link(name: __MODULE__, strategy: :one_for_one)
@@ -22,7 +22,7 @@ defmodule Codenames.Game.Manager do
     }
   end
 
-  def start_match(room_id, email, board) do
+  def start_server(room_id, email, board) do
     existing_process(room_id) || start(room_id, email, board)
   end
 
