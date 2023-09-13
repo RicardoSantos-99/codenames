@@ -22,6 +22,8 @@ defmodule Codenames.Rooms.Room do
 
     belongs_to(:user, User)
 
+    many_to_many(:users, User, join_through: "users_rooms")
+
     timestamps()
   end
 

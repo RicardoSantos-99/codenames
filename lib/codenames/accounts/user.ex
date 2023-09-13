@@ -17,6 +17,7 @@ defmodule Codenames.Accounts.User do
 
     has_many(:rooms, Room)
 
+    many_to_many(:rooms, Room, join_through: "users_rooms")
     timestamps()
   end
 
