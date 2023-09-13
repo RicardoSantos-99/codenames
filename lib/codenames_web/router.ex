@@ -52,6 +52,7 @@ defmodule CodenamesWeb.Router do
   scope "/", CodenamesWeb do
     pipe_through([:browser])
 
+    get("/", RedirectController, :index)
     delete("/users/log_out", UserSessionController, :delete)
 
     live_session :current_user,
