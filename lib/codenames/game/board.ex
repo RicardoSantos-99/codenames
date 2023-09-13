@@ -68,8 +68,8 @@ defmodule Codenames.Game.Board do
     Enum.member?(board.blue_team.players, email) || Enum.member?(board.red_team.players, email)
   end
 
-  def already_with_spymaster?(board, email) do
-    board.blue_team.spymaster == email || board.red_team.spymaster == email
+  def already_with_spymaster?(%__MODULE__{red_team: red, blue_team: blue}, email) do
+    Team.player_is_spymaster?(red, email) || Team.player_is_spymaster?(blue, email)
   end
 
   defp assign_operative_to_team(board, _team, email, :blue) do

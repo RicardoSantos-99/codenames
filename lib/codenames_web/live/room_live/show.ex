@@ -46,7 +46,7 @@ defmodule CodenamesWeb.RoomLive.Show do
     board = Board.join_spymaster(socket.assigns.board, user.email, String.to_atom(team))
     update_board(socket.assigns.topic, board)
 
-    {:noreply, assign(socket, :board, board)}
+    {:noreply, socket |> assign(:board, board)}
   end
 
   @impl true

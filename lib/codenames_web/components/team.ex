@@ -1,6 +1,13 @@
 defmodule CodenamesWeb.Components.Team do
   use Phoenix.Component
 
+  alias Codenames.Game.{Team, Board}
+
+  attr :board, :map, required: true
+  attr :user, :map, required: true
+  attr :team, :string, required: true
+  attr :module, :atom, default: Team
+
   def team(assigns) do
     ~L"""
       <div class="w-1/4 p-2">
@@ -8,7 +15,7 @@ defmodule CodenamesWeb.Components.Team do
           <h2 class="text-xl font-bold text-white">Time <%= String.capitalize(@team) %></h2>
           <%= if @team == "blue", do: Enum.count(@board.blue_team.words), else: Enum.count(@board.red_team.words) %>
           <div class="mt-4">
-            <button phx-click="spymaster" phx-value-team="<%= @team %>">
+            <button phx-click="spymaster" phx-value-team="<%= @team %>" <%= disable_when_player_is_spymaster(@board, @user.email) %>>
               <h3 class="text-lg font-bold text-white underline">
                 Spymaster
               </h3>
@@ -16,7 +23,7 @@ defmodule CodenamesWeb.Components.Team do
             <p class="text-white"><%= join_spymaster(@board, @team) %></p>
           </div>
           <div class="mt-4">
-            <button phx-click="operative" phx-value-team="<%= @team %>">
+            <button phx-click="operative" phx-value-team="<%= @team %>" <%= disable_when_player_is_spymaster(@board, @user.email) %>>
               <h3 class="text-lg font-bold text-white underline">
                 Operatives
               </h3>
@@ -52,4 +59,8 @@ defmodule CodenamesWeb.Components.Team do
   end
 
   defp join_spymaster(_, _), do: ""
+
+  defp disable_when_player_is_spymaster(board, email) do
+    if Board.already_with_spymaster?(board, email), do: "disabled", else: ""
+  end
 end
