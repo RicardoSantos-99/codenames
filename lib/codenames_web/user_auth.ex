@@ -1,4 +1,9 @@
 defmodule CodenamesWeb.UserAuth do
+  @moduledoc """
+  This module handles user authentication for the Codenames web application.
+
+  It provides functions for user registration, login, and authentication.
+  """
   use CodenamesWeb, :verified_routes
 
   import Plug.Conn

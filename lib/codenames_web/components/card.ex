@@ -1,5 +1,11 @@
 defmodule CodenamesWeb.Components.Card do
+  @moduledoc """
+  Card component
+  ## Examples
+
+  """
   use Phoenix.Component
+  require Codenames.Game.Board
   alias Codenames.Game.Board
 
   def card(assigns) do
@@ -8,7 +14,7 @@ defmodule CodenamesWeb.Components.Card do
       <%= for %{word: word, color: color, revealed: _revealed} <- @board.words do %>
         <div class="w-32 h-32 rounded-lg shadow-md flex items-center justify-center <%= get_color(@board, @user.email, color) %>">
           <p
-            class="text-xl font-bold uppercase <%= (color == :black && user_is_spymaster?(@board, @user.email)) && "text-white" %>"
+            class="text-xl font-bold uppercase <%= (color == :black && Board.already_with_spymaster?(@board, @user.email)) && "text-white" %>"
           >
             <%= word %>
           </p>
@@ -18,17 +24,11 @@ defmodule CodenamesWeb.Components.Card do
     """
   end
 
-  defp user_is_spymaster?(board, email) do
-    Board.already_with_spymaster?(board, email)
+  def get_color(board, email, color) when Board.is_spymaster?(board, email) do
+    color_class(color)
   end
 
-  def get_color(board, email, color) do
-    unless user_is_spymaster?(board, email) do
-      color_class(:neutral)
-    else
-      color_class(color)
-    end
-  end
+  def get_color(_board, _email, _color), do: color_class(:neutral)
 
   defp color_class(:black), do: "bg-zinc-950"
   defp color_class(:blue), do: "bg-blue-400"

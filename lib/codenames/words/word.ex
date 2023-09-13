@@ -1,4 +1,7 @@
 defmodule Codenames.Words.Word do
+  @moduledoc """
+  Word context
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -1,4 +1,9 @@
 defmodule CodenamesWeb.Components.Team do
+  @moduledoc """
+  Team component
+
+  ## Examples
+  """
   use Phoenix.Component
 
   alias Codenames.Game.{Team, Board}

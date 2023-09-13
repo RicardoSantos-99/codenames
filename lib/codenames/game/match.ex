@@ -1,4 +1,7 @@
 defmodule Codenames.Game.Match do
+  @moduledoc """
+  Match context
+  """
   defstruct [:room_id, :players, :board, :round, :admin, :total_players]
   alias Codenames.Game.Board
 

@@ -1,4 +1,7 @@
 defmodule Codenames.Game.Team do
+  @moduledoc """
+  Team struct
+  """
   defstruct [:words, :players, :spymaster]
 
   def new(words, players \\ []) do

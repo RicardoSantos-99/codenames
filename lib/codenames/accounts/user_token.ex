@@ -1,4 +1,7 @@
 defmodule Codenames.Accounts.UserToken do
+  @moduledoc """
+  Token context
+  """
   use Ecto.Schema
   import Ecto.Query
   alias Codenames.Accounts.UserToken

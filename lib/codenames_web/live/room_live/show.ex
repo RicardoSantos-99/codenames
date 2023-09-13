@@ -79,7 +79,6 @@ defmodule CodenamesWeb.RoomLive.Show do
   end
 
   def handle_info(_, socket) do
-    # TODO handle save edit room
     {:noreply, socket}
   end
 

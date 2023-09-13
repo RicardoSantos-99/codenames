@@ -1,4 +1,7 @@
 defmodule Codenames.Game.Manager do
+  @moduledoc """
+  Manager context
+  """
   use DynamicSupervisor
 
   alias Codenames.Game.Server

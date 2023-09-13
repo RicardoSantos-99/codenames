@@ -1,4 +1,7 @@
 defmodule Codenames.Accounts.User do
+  @moduledoc """
+  User schema
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias Codenames.Rooms.Room

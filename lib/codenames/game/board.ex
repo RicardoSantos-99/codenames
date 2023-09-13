@@ -1,10 +1,16 @@
 defmodule Codenames.Game.Board do
+  @moduledoc """
+  Board context
+  """
   defstruct [:starting_team, :blue_team, :red_team, :words]
   alias Codenames.Words
   alias Codenames.Game.Team
 
   defguard is_blue_team_smaller(board)
            when length(board.blue_team.players) <= length(board.red_team.players)
+
+  defguard is_spymaster?(board, email)
+           when board.red_team.spymaster == email or board.blue_team.spymaster == email
 
   def new(starting_team, %Team{} = blue_team, %Team{} = red_team, words) do
     %__MODULE__{

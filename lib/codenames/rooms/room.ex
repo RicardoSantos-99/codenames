@@ -1,4 +1,7 @@
 defmodule Codenames.Rooms.Room do
+  @moduledoc """
+  Room context
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

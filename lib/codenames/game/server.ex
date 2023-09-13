@@ -1,4 +1,7 @@
 defmodule Codenames.Game.Server do
+  @moduledoc """
+  Server context
+  """
   use GenServer
 
   alias Codenames.Game.Match

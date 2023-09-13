@@ -1,4 +1,7 @@
 defmodule Codenames.Accounts.UserNotifier do
+  @moduledoc """
+  A module that can be used to send emails
+  """
   import Swoosh.Email
 
   alias Codenames.Mailer
