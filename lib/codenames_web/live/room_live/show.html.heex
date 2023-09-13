@@ -7,9 +7,9 @@
 </.header>
 
 <div class="flex w-4/5 m-4">
-  <.team board={@board} module={Team} team="blue"></.team>
+  <.team board={@board} user={@current_user} team="blue" />
   <.card board={@board} user={@current_user} id="card" module={Card}></.card>
-  <.team board={@board} module={Team} team="red"></.team>
+  <.team board={@board} user={@current_user} team="red" />
 </div>
 
 <.back navigate={~p"/rooms"}>Back to rooms</.back>
