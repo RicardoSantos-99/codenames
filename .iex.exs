@@ -1,23 +1,23 @@
 alias Codenames.Accounts.User
 alias Codenames.Accounts.UserToken
 alias Codenames.Accounts.UserNotifier
-alias Codenames.Game.Board
-alias Codenames.Game.Manager
-alias Codenames.Game.Server
-alias Codenames.Game.Match
+alias Codenames.Server.Board
+alias Codenames.Server.Manager
+alias Codenames.Server.Server
+alias Codenames.Server.Match
 alias Codenames.Repo
 alias Codenames.Words
 
 email = "Jp9K9@example.com"
 
-board = %Codenames.Game.Board{
+board = %Codenames.Server.Board{
   starting_team: :red,
-  blue_team: %Codenames.Game.Team{
+  blue_team: %Codenames.Server.Team{
     words: ["Zumbi", "Rosa", "Bola", "Xícara", "Dado", "Urso", "Navio", "Elefante"],
     players: [],
     spymaster: nil
   },
-  red_team: %Codenames.Game.Team{
+  red_team: %Codenames.Server.Team{
     words: ["Laranja", "Jogo", "Faca", "Ferro", "Janela", "Queijo", "Ninho", "Hospedagem", "Rato"],
     players: [],
     spymaster: nil

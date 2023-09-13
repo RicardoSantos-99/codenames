@@ -3,18 +3,18 @@ defmodule CodenamesWeb.RoomLive.Show do
 
   import CodenamesWeb.Components.{Card, Team}
 
-  alias CodenamesWeb.Presence
-  alias Codenames.Game.{Board, Manager, Match, Server}
-  alias Codenames.Rooms
-  alias Phoenix.PubSub
+  alias CodenamesWeb.{Presence}
+  alias Codenames.Server.{Board, Server, Match, Manager}
   alias Phoenix.Socket.Broadcast
+  alias Phoenix.PubSub
+  alias Codenames.Rooms
 
   @impl true
   def mount(%{"id" => room_id}, _session, socket) do
     user = socket.assigns.current_user
     topic = "game_room:#{room_id}"
 
-    board = Board.build_game_board()
+    board = start_game(topic, user)
 
     PubSub.subscribe(Codenames.PubSub, topic)
     Presence.track(self(), topic, user.email, user)
@@ -59,9 +59,8 @@ defmodule CodenamesWeb.RoomLive.Show do
   end
 
   def handle_event("start", _params, socket) do
-    board = start_game(socket.assigns.topic, socket.assigns.current_user)
-    update_board(socket.assigns.topic, board)
-    {:noreply, socket |> assign(:board, board)}
+    Server.start_game(socket.assigns.topic, socket.assigns.current_user.email)
+    {:noreply, socket}
   end
 
   @impl true
@@ -95,7 +94,7 @@ defmodule CodenamesWeb.RoomLive.Show do
       false ->
         %Board{} = board = Board.build_game_board()
 
-        Manager.start_match(room_id, user.email, board)
+        Manager.start_server(room_id, user.email, board)
         board
     end
   end

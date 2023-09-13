@@ -1,4 +1,4 @@
-defmodule Codenames.Game.Team do
+defmodule Codenames.Server.Team do
   @moduledoc """
   Team struct
   """
