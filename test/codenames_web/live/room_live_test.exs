@@ -3,38 +3,45 @@ defmodule CodenamesWeb.RoomLiveTest do
 
   import Phoenix.LiveViewTest
   import Codenames.RoomsFixtures
+  import Codenames.AccountsFixtures
 
   @create_attrs %{
-    hashed_password: "some hashed_password",
+    password: "VAlid!Password123",
     name: "some name",
-    public: true,
-    status: "some status"
+    public: true
   }
   @update_attrs %{
-    hashed_password: "some updated hashed_password",
+    password: "VAlid!Password123",
     name: "some updated name",
-    public: false,
-    status: "some updated status"
+    public: false
   }
-  @invalid_attrs %{hashed_password: nil, name: nil, public: false, status: nil}
+  @invalid_attrs %{password: nil, name: nil, public: false}
 
   defp create_room(_) do
-    room = room_fixture()
-    %{room: room}
+    user = user_fixture()
+
+    room = room_fixture(%{user_id: user.id})
+    %{room: room, user: user}
   end
 
   describe "Index" do
     setup [:create_room]
 
-    test "lists all rooms", %{conn: conn, room: room} do
-      {:ok, _index_live, html} = live(conn, ~p"/rooms")
+    test "lists all rooms", %{conn: conn, room: room, user: user} do
+      {:ok, _index_live, html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/rooms")
 
       assert html =~ "Listing Rooms"
-      assert html =~ room.hashed_password
+      assert html =~ room.name
     end
 
-    test "saves new room", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/rooms")
+    test "saves new room", %{conn: conn, user: user} do
+      {:ok, index_live, _html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/rooms")
 
       assert index_live |> element("a", "New Room") |> render_click() =~
                "New Room"
@@ -53,11 +60,14 @@ defmodule CodenamesWeb.RoomLiveTest do
 
       html = render(index_live)
       assert html =~ "Room created successfully"
-      assert html =~ "some hashed_password"
+      assert html =~ "some name"
     end
 
-    test "updates room in listing", %{conn: conn, room: room} do
-      {:ok, index_live, _html} = live(conn, ~p"/rooms")
+    test "updates room in listing", %{conn: conn, room: room, user: user} do
+      {:ok, index_live, _html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/rooms")
 
       assert index_live |> element("#rooms-#{room.id} a", "Edit") |> render_click() =~
                "Edit Room"
@@ -76,11 +86,14 @@ defmodule CodenamesWeb.RoomLiveTest do
 
       html = render(index_live)
       assert html =~ "Room updated successfully"
-      assert html =~ "some updated hashed_password"
+      assert html =~ "some updated name"
     end
 
-    test "deletes room in listing", %{conn: conn, room: room} do
-      {:ok, index_live, _html} = live(conn, ~p"/rooms")
+    test "deletes room in listing", %{conn: conn, room: room, user: user} do
+      {:ok, index_live, _html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/rooms")
 
       assert index_live |> element("#rooms-#{room.id} a", "Delete") |> render_click()
       refute has_element?(index_live, "#rooms-#{room.id}")
@@ -90,15 +103,21 @@ defmodule CodenamesWeb.RoomLiveTest do
   describe "Show" do
     setup [:create_room]
 
-    test "displays room", %{conn: conn, room: room} do
-      {:ok, _show_live, html} = live(conn, ~p"/rooms/#{room}")
+    test "displays room", %{conn: conn, room: room, user: user} do
+      {:ok, _show_live, html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/rooms/#{room}")
 
       assert html =~ "Show Room"
-      assert html =~ room.hashed_password
+      assert html =~ "Edit room"
     end
 
-    test "updates room within modal", %{conn: conn, room: room} do
-      {:ok, show_live, _html} = live(conn, ~p"/rooms/#{room}")
+    test "updates room within modal", %{conn: conn, room: room, user: user} do
+      {:ok, show_live, _html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/rooms/#{room}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Room"
@@ -117,7 +136,7 @@ defmodule CodenamesWeb.RoomLiveTest do
 
       html = render(show_live)
       assert html =~ "Room updated successfully"
-      assert html =~ "some updated hashed_password"
+      assert html =~ "Edit room"
     end
   end
 end

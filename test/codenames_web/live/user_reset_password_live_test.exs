@@ -29,7 +29,7 @@ defmodule CodenamesWeb.UserResetPasswordLiveTest do
 
       assert to == %{
                flash: %{"error" => "Reset password link is invalid or it has expired."},
-               to: ~p"/"
+               to: ~p"/users/log_in"
              }
     end
 
@@ -56,8 +56,8 @@ defmodule CodenamesWeb.UserResetPasswordLiveTest do
         lv
         |> form("#reset_password_form",
           user: %{
-            "password" => "new valid password",
-            "password_confirmation" => "new valid password"
+            "password" => "VALID123!teste!@",
+            "password_confirmation" => "VALID123!teste!@"
           }
         )
         |> render_submit()
@@ -65,7 +65,7 @@ defmodule CodenamesWeb.UserResetPasswordLiveTest do
 
       refute get_session(conn, :user_token)
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Password reset successfully"
-      assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
+      assert Accounts.get_user_by_email_and_password(user.email, "VALID123!teste!@")
     end
 
     test "does not reset password on invalid data", %{conn: conn, token: token} do

@@ -78,6 +78,11 @@ defmodule CodenamesWeb.RoomLive.Show do
     {:noreply, socket |> assign(:board, board)}
   end
 
+  def handle_info(_, socket) do
+    # TODO handle save edit room
+    {:noreply, socket}
+  end
+
   def update_board(topic, board) do
     PubSub.broadcast(Codenames.PubSub, topic, {:update_board, board})
   end

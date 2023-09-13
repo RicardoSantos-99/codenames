@@ -11,10 +11,10 @@ defmodule Codenames.RoomsFixtures do
     {:ok, room} =
       attrs
       |> Enum.into(%{
-        hashed_password: "some hashed_password",
+        password: "Password123!",
         name: "some name",
         public: true,
-        status: "some status"
+        status: "open"
       })
       |> Codenames.Rooms.create_room()
 
