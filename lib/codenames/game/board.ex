@@ -22,18 +22,18 @@ defmodule Codenames.Game.Board do
   end
 
   def build_game_board do
-    all_words = Words.random_words_from_db()
-
     starting_team = Enum.random([:blue, :red])
 
-    {blue_words, after_blue} =
-      Words.take_random_words(all_words, if(starting_team == :blue, do: 9, else: 8))
+    {blue_words_count, red_words_count} =
+      case starting_team do
+        :blue -> {9, 8}
+        :red -> {8, 9}
+      end
 
-    {red_words, after_red} =
-      Words.take_random_words(after_blue, if(starting_team == :blue, do: 8, else: 9))
-
-    {neutral_words, after_neutral} = Words.take_random_words(after_red, 7)
-    {black_word, _} = Words.take_random_words(after_neutral, 1)
+    blue_words = Words.list_random_words(blue_words_count)
+    red_words = Words.list_random_words(red_words_count)
+    neutral_words = Words.list_random_words(7)
+    black_word = Words.list_random_words(1)
 
     words = Words.all_words(red_words, blue_words, neutral_words, black_word) |> Enum.shuffle()
     new(starting_team, Team.new(blue_words), Team.new(red_words), words)

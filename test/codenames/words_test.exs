@@ -1,4 +1,8 @@
 defmodule Codenames.WordsTest do
+  @moduledoc false
+  use ExUnit.Case
+  @moduletag :word_test
+
   use Codenames.DataCase
 
   alias Codenames.Words
@@ -13,6 +17,12 @@ defmodule Codenames.WordsTest do
     test "list_words/0 returns all words" do
       word = word_fixture()
       assert Words.list_words() == [word]
+    end
+
+    test "list_random_words/1 returns all words" do
+      word_fixture()
+      assert Enum.count(Words.list_random_words(1)) == 1
+      assert Enum.empty?(Words.list_random_words(0))
     end
 
     test "get_word!/1 returns the word with given id" do
@@ -54,6 +64,30 @@ defmodule Codenames.WordsTest do
     test "change_word/1 returns a word changeset" do
       word = word_fixture()
       assert %Ecto.Changeset{} = Words.change_word(word)
+    end
+
+    test "all_words/4 returns all words" do
+      [red, blue, neutral, black] = Words.all_words(["some1"], ["some2"], ["some3"], ["some4"])
+
+      assert red.word == "some1"
+      assert red.revealed == false
+      assert red.color == :red
+
+      assert blue.word == "some2"
+      assert blue.revealed == false
+      assert blue.color == :blue
+
+      assert neutral.word == "some3"
+      assert neutral.revealed == false
+      assert neutral.color == :neutral
+
+      assert black.word == "some4"
+      assert black.revealed == false
+      assert black.color == :black
+    end
+
+    test "build_word_map/2 builds a word map" do
+      assert Words.build_word_map("some1", :red) == %{color: :red, revealed: false, word: "some1"}
     end
   end
 end

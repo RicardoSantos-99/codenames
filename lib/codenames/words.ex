@@ -5,7 +5,6 @@ defmodule Codenames.Words do
 
   import Ecto.Query, warn: false
   alias Codenames.Repo
-
   alias Codenames.Words.Word
 
   @doc """
@@ -19,6 +18,18 @@ defmodule Codenames.Words do
   """
   def list_words do
     Repo.all(Word)
+  end
+
+  @doc """
+  Returns the list of random words.
+
+  ## Examples
+
+      iex> list_random_words(limit)
+      [%Word{}, ...]
+  """
+  def list_random_words(limit) do
+    Repo.all(from w in Word, order_by: fragment("RANDOM()"), limit: ^limit, select: w.term)
   end
 
   @doc """
@@ -102,22 +113,14 @@ defmodule Codenames.Words do
     Word.changeset(word, attrs)
   end
 
-  def random_words_from_db do
-    all_words =
-      list_words()
-      |> Enum.map(fn word -> word.term end)
+  @doc """
+  Returns all words.
 
-    Enum.take_random(all_words, 25)
-  end
+  ## Examples
 
-  def take_random_words(words, count) do
-    chosen_words = Enum.take_random(words, count)
-    remaining_words = Enum.reject(words, fn word -> word in chosen_words end)
-    {chosen_words, remaining_words}
-  end
-
-  defp build_word_map(word, color), do: %{word: word, color: color, revealed: false}
-
+        iex> all_words(red, blue, neutral, black)
+        [%{color: :red, revealed: false, word: "Hospedagem"}, ...]
+  """
   def all_words(red, blue, neutral, black) do
     red = Enum.map(red, &build_word_map(&1, :red))
     blue = Enum.map(blue, &build_word_map(&1, :blue))
@@ -126,4 +129,14 @@ defmodule Codenames.Words do
 
     red ++ blue ++ neutral ++ black
   end
+
+  @doc """
+  Builds a word map.
+
+  ## Examples
+
+          iex> build_word_map("Hospedagem", :red)
+          %{color: :red, revealed: false, word: "Hospedagem"}
+  """
+  def build_word_map(word, color), do: %{word: word, color: color, revealed: false}
 end

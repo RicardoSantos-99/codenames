@@ -1,6 +1,7 @@
 alias Codenames.Accounts.User
 alias Codenames.Accounts.UserToken
 alias Codenames.Accounts.UserNotifier
+alias Codenames.Game.Board
 alias Codenames.Game.Manager
 alias Codenames.Game.Server
 alias Codenames.Game.Match
