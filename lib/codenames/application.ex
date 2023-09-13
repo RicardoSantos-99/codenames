@@ -16,12 +16,16 @@ defmodule Codenames.Application do
       {Phoenix.PubSub, name: Codenames.PubSub},
       # Start Finch
       {Finch, name: Codenames.Finch},
-      # Start the Endpoint (http/https)
+      # Start the Presence
       CodenamesWeb.Presence,
+      # Start the Registry
       {Registry, keys: :unique, name: Codenames.GameRegistry},
-      CodenamesWeb.Endpoint
+      # Start the Endpoint (http/https)
+      CodenamesWeb.Endpoint,
+
       # Start a worker by calling: Codenames.Worker.start_link(arg)
       # {Codenames.Worker, arg}
+      Codenames.Game.Manager
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

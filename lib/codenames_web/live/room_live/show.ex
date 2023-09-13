@@ -1,18 +1,21 @@
 defmodule CodenamesWeb.RoomLive.Show do
   use CodenamesWeb, :live_view
+
   import CodenamesWeb.Components.{Card, Team}
+
   alias CodenamesWeb.{Presence}
   alias Codenames.Game.{Board, Server, Match}
   alias Phoenix.Socket.Broadcast
   alias Phoenix.PubSub
   alias Codenames.Rooms
+  alias Codenames.Game.Manager
 
   @impl true
   def mount(%{"id" => room_id}, _session, socket) do
     user = socket.assigns.current_user
     topic = "game_room:#{room_id}"
 
-    board = setup_board_and_server(topic, user)
+    board = Board.build_game_board()
 
     PubSub.subscribe(Codenames.PubSub, topic)
     Presence.track(self(), topic, user.email, user)
@@ -22,6 +25,8 @@ defmodule CodenamesWeb.RoomLive.Show do
       |> assign(:user_emails, [])
       |> assign(:board, board)
       |> assign(:topic, topic)
+      |> assign(:page_title, page_title(socket.assigns.live_action))
+      |> assign(:room, Rooms.get_room!(room_id))
 
     {:ok, socket}
   end
@@ -54,6 +59,12 @@ defmodule CodenamesWeb.RoomLive.Show do
     {:noreply, socket |> assign(:board, board)}
   end
 
+  def handle_event("start", _params, socket) do
+    board = start_game(socket.assigns.topic, socket.assigns.current_user)
+    update_board(socket.assigns.topic, board)
+    {:noreply, socket |> assign(:board, board)}
+  end
+
   @impl true
   def handle_info(%Broadcast{event: "presence_diff", payload: _payload, topic: _topic}, socket) do
     users =
@@ -67,11 +78,11 @@ defmodule CodenamesWeb.RoomLive.Show do
     {:noreply, socket |> assign(:board, board)}
   end
 
-  def update_board(channel, board) do
-    PubSub.broadcast(Codenames.PubSub, channel, {:update_board, board})
+  def update_board(topic, board) do
+    PubSub.broadcast(Codenames.PubSub, topic, {:update_board, board})
   end
 
-  defp setup_board_and_server(room_id, user) do
+  def start_game(room_id, user) do
     case Server.server_exists?(room_id) do
       true ->
         %Match{board: board} = Server.join(room_id, user.email)
@@ -79,8 +90,9 @@ defmodule CodenamesWeb.RoomLive.Show do
         board
 
       false ->
-        %Board{} = board = Board.build_game_board(user)
-        Server.start_link(room_id, user.email, board)
+        %Board{} = board = Board.build_game_board()
+
+        Manager.start_match(room_id, user.email, board)
         board
     end
   end

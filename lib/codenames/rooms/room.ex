@@ -23,8 +23,6 @@ defmodule Codenames.Rooms.Room do
 
   @doc false
   def changeset(room, attrs, opts \\ []) do
-    IO.inspect(attrs)
-
     room
     |> cast(attrs, [:name, :status, :public, :user_id])
     |> validate_required([:name, :status, :public, :user_id])

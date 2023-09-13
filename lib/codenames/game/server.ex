@@ -3,8 +3,9 @@ defmodule Codenames.Game.Server do
 
   alias Codenames.Game.Match
   alias Codenames.Game.Board
+  alias Codenames.GameRegistry
 
-  def start_link(room_id, email, %Board{} = board) do
+  def start_link([room_id, email, %Board{} = board]) do
     initial_match = Match.new(room_id, email, board)
 
     GenServer.start_link(__MODULE__, initial_match, name: via_tuple(room_id))
@@ -34,13 +35,17 @@ defmodule Codenames.Game.Server do
   end
 
   def via_tuple(id) do
-    {:via, Registry, {Codenames.GameRegistry, id}}
+    {:via, Registry, {GameRegistry, id}}
   end
 
   def server_exists?(id) do
-    case Registry.lookup(Codenames.GameRegistry, id) do
+    case Registry.lookup(GameRegistry, id) do
       [] -> false
       _ -> true
     end
+  end
+
+  def list_all_game_servers do
+    Registry.keys(GameRegistry, self())
   end
 end

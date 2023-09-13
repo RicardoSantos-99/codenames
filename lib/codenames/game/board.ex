@@ -15,7 +15,7 @@ defmodule Codenames.Game.Board do
     }
   end
 
-  def build_game_board(user) do
+  def build_game_board do
     all_words = Words.random_words_from_db()
 
     starting_team = Enum.random([:blue, :red])
@@ -28,11 +28,9 @@ defmodule Codenames.Game.Board do
 
     {neutral_words, after_neutral} = Words.take_random_words(after_red, 7)
     {black_word, _} = Words.take_random_words(after_neutral, 1)
-    red_team = Team.new(red_words, [])
-    blue_team = Team.new(blue_words, [user.email])
 
     words = Words.all_words(red_words, blue_words, neutral_words, black_word) |> Enum.shuffle()
-    new(starting_team, blue_team, red_team, words)
+    new(starting_team, Team.new(blue_words), Team.new(red_words), words)
   end
 
   def add_player_to_team_with_fewer_players(board, email) when is_blue_team_smaller(board) do

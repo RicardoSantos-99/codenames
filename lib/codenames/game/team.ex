@@ -1,7 +1,7 @@
 defmodule Codenames.Game.Team do
   defstruct [:words, :players, :spymaster]
 
-  def new(words, players) do
+  def new(words, players \\ []) do
     %__MODULE__{
       words: words,
       players: players,
