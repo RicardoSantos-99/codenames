@@ -43,11 +43,28 @@ jobs:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
+
+      - name: Check Formatting
+        run: mix format --check-formatted
+
+      - name: Check coverage
+        run: mix coveralls.json
+        env:
+          MIX_ENV: test
+
+      - name: Run codecov script
+        run: bash <(curl -s https://codecov.io/bash)
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        continue-on-error: true
+
       - name: Install dependencies
         run: mix deps.get
+
       - name: Create and migrate database
         run: |
           mix ecto.create
           mix ecto.migrate
+
       - name: Run tests
         run: mix test
