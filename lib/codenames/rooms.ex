@@ -37,7 +37,11 @@ defmodule Codenames.Rooms do
       ** (Ecto.NoResultsError)
 
   """
-  def get_room!(id), do: Repo.get!(Room, id)
+  def get_room!(id) do
+    Room
+    |> preload(:user)
+    |> Repo.get!(id)
+  end
 
   @doc """
   Creates a room.
@@ -55,6 +59,11 @@ defmodule Codenames.Rooms do
     %Room{}
     |> Room.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      # here we need to preload the user but i don't know if this is the best way to do it
+      {:ok, room} -> {:ok, get_room!(room.id)}
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 
   @doc """
