@@ -2,6 +2,7 @@ defmodule CodenamesWeb.RoomLive.FormComponent do
   use CodenamesWeb, :live_component
 
   alias Codenames.Rooms
+  alias Codenames.Repo
 
   @impl true
   def render(assigns) do
@@ -69,7 +70,7 @@ defmodule CodenamesWeb.RoomLive.FormComponent do
   defp save_room(socket, :new, room_params) do
     case Rooms.create_room(Map.put(room_params, "user_id", socket.assigns.user.id)) do
       {:ok, room} ->
-        notify_parent({:saved, room})
+        notify_parent({:saved, Repo.preload(room, :user)})
 
         {:noreply,
          socket

@@ -58,7 +58,6 @@ defmodule CodenamesWeb.RoomLiveTest do
 
       assert_patch(index_live, ~p"/rooms")
 
-      IO.puts("index_live: #{inspect(index_live)}")
       html = render(index_live)
       assert html =~ "Room created successfully"
       assert html =~ "some name"

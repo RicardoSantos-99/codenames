@@ -7,5 +7,7 @@ defmodule Codenames.Repo.Migrations.AddUsername do
     alter table(:users) do
       add :username, :string
     end
+
+    create unique_index(:users, [:username])
   end
 end
