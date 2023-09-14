@@ -18,7 +18,9 @@ defmodule Codenames.Rooms do
 
   """
   def list_rooms do
-    Repo.all(Room)
+    Room
+    |> preload(:user)
+    |> Repo.all()
   end
 
   @doc """

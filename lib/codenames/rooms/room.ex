@@ -2,11 +2,12 @@ defmodule Codenames.Rooms.Room do
   @moduledoc """
   Room context
   """
+
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Ecto.Enum
   alias Codenames.Accounts.User
+  alias Ecto.Enum
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

@@ -9,6 +9,7 @@ defmodule Codenames.Accounts.User do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
+    field(:username, :string)
     field(:email, :string)
     field(:password, :string, virtual: true, redact: true)
     field(:hashed_password, :string, redact: true)
@@ -44,7 +45,8 @@ defmodule Codenames.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:username, :email, :password])
+    |> validate_username()
     |> validate_email(opts)
     |> validate_password(opts)
   end
@@ -55,6 +57,14 @@ defmodule Codenames.Accounts.User do
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:email, max: 160)
     |> maybe_validate_unique_email(opts)
+  end
+
+  defp validate_username(changeset) do
+    changeset
+    |> validate_required([:username])
+    |> validate_length(:username, max: 160)
+    |> validate_format(:username, ~r/^[a-zA-Z0-9_]+$/, message: "must be alphanumeric")
+    |> unique_constraint(:username)
   end
 
   def validate_password(changeset, opts) do
