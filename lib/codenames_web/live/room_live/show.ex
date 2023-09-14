@@ -3,12 +3,11 @@ defmodule CodenamesWeb.RoomLive.Show do
 
   import CodenamesWeb.Components.{Card, Team}
 
-  alias CodenamesWeb.{Presence}
-  alias Codenames.Game.{Board, Server, Match}
-  alias Phoenix.Socket.Broadcast
-  alias Phoenix.PubSub
+  alias CodenamesWeb.Presence
+  alias Codenames.Game.{Board, Manager, Match, Server}
   alias Codenames.Rooms
-  alias Codenames.Game.Manager
+  alias Phoenix.PubSub
+  alias Phoenix.Socket.Broadcast
 
   @impl true
   def mount(%{"id" => room_id}, _session, socket) do

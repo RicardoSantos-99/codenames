@@ -19,8 +19,7 @@ defmodule CodenamesWeb.RoomLiveTest do
 
   defp create_room(_) do
     user = user_fixture()
-
-    room = room_fixture(%{user_id: user.id})
+    room = room_fixture(%{user_id: user.id}, preload: true)
     %{room: room, user: user}
   end
 
@@ -43,8 +42,9 @@ defmodule CodenamesWeb.RoomLiveTest do
         |> log_in_user(user)
         |> live(~p"/rooms")
 
-      assert index_live |> element("a", "New Room") |> render_click() =~
-               "New Room"
+      assert index_live
+             |> element("a", "New Room")
+             |> render_click() =~ "New Room"
 
       assert_patch(index_live, ~p"/rooms/new")
 
@@ -58,6 +58,7 @@ defmodule CodenamesWeb.RoomLiveTest do
 
       assert_patch(index_live, ~p"/rooms")
 
+      IO.puts("index_live: #{inspect(index_live)}")
       html = render(index_live)
       assert html =~ "Room created successfully"
       assert html =~ "some name"

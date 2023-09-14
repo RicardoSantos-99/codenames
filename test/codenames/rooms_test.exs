@@ -16,12 +16,12 @@ defmodule Codenames.RoomsTest do
     @invalid_attrs %{password: nil, name: nil, public: nil, status: nil}
 
     test "list_rooms/0 returns all rooms", %{user: user} do
-      room = room_fixture(%{user_id: user.id})
+      room = room_fixture(%{user_id: user.id}, preload: true)
       assert Rooms.list_rooms() == [room]
     end
 
     test "get_room!/1 returns the room with given id", %{user: user} do
-      room = room_fixture(%{user_id: user.id})
+      room = room_fixture(%{user_id: user.id}, preload: true)
       assert Rooms.get_room!(room.id) == room
     end
 
@@ -62,7 +62,7 @@ defmodule Codenames.RoomsTest do
     end
 
     test "update_room/2 with invalid data returns error changeset", %{user: user} do
-      room = room_fixture(%{user_id: user.id})
+      room = room_fixture(%{user_id: user.id}, preload: true)
       assert {:error, %Ecto.Changeset{}} = Rooms.update_room(room, @invalid_attrs)
       assert room == Rooms.get_room!(room.id)
     end

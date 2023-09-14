@@ -7,7 +7,7 @@ defmodule Codenames.RoomsFixtures do
   @doc """
   Generate a room.
   """
-  def room_fixture(attrs \\ %{}) do
+  def room_fixture(attrs \\ %{}, preload \\ false) do
     {:ok, room} =
       attrs
       |> Enum.into(%{
@@ -18,6 +18,10 @@ defmodule Codenames.RoomsFixtures do
       })
       |> Codenames.Rooms.create_room()
 
-    room
+    if preload do
+      Codenames.Repo.preload(room, :user)
+    else
+      room
+    end
   end
 end
