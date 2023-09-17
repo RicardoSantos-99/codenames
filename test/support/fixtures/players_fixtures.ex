@@ -10,9 +10,7 @@ defmodule Codenames.PlayersFixtures do
   def player_room_fixture(attrs \\ %{}) do
     {:ok, player_room} =
       attrs
-      |> Enum.into(%{
-
-      })
+      |> Enum.into(%{})
       |> Codenames.Players.create_player_room()
 
     player_room

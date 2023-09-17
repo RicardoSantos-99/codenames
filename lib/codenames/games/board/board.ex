@@ -1,25 +1,17 @@
-defmodule Codenames.Server.Board do
+defmodule Codenames.Games.Board do
   @moduledoc """
   Board context
   """
-  defstruct [:starting_team, :blue_team, :red_team, :words]
   alias Codenames.Words
-  alias Codenames.Server.Team
+  alias Codenames.Games.Board.BoardSchema
+  alias Codenames.Games.Team.TeamSchema
+  alias Codenames.Games.Team
 
   defguard is_blue_team_smaller(board)
            when length(board.blue_team.players) <= length(board.red_team.players)
 
   defguard is_spymaster?(board, email)
            when board.red_team.spymaster == email or board.blue_team.spymaster == email
-
-  def new(starting_team, %Team{} = blue_team, %Team{} = red_team, words) do
-    %__MODULE__{
-      starting_team: starting_team,
-      blue_team: blue_team,
-      red_team: red_team,
-      words: words
-    }
-  end
 
   def build_game_board do
     starting_team = Enum.random([:blue, :red])
@@ -36,7 +28,13 @@ defmodule Codenames.Server.Board do
     black_word = Words.list_random_words(1)
 
     words = Words.all_words(red_words, blue_words, neutral_words, black_word) |> Enum.shuffle()
-    new(starting_team, Team.new(blue_words), Team.new(red_words), words)
+
+    %BoardSchema{
+      starting_team: starting_team,
+      blue_team: %TeamSchema{words: blue_words, players: [], spymaster: nil},
+      red_team: %TeamSchema{words: red_words, players: [], spymaster: nil},
+      words: words
+    }
   end
 
   def add_player_to_team_with_fewer_players(board, email) when is_blue_team_smaller(board) do
@@ -74,7 +72,7 @@ defmodule Codenames.Server.Board do
     Enum.member?(board.blue_team.players, email) || Enum.member?(board.red_team.players, email)
   end
 
-  def already_with_spymaster?(%__MODULE__{red_team: red, blue_team: blue}, email) do
+  def already_with_spymaster?(%BoardSchema{red_team: red, blue_team: blue}, email) do
     Team.player_is_spymaster?(red, email) || Team.player_is_spymaster?(blue, email)
   end
 

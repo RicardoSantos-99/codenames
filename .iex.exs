@@ -1,23 +1,24 @@
 alias Codenames.Accounts.User
 alias Codenames.Accounts.UserToken
 alias Codenames.Accounts.UserNotifier
-alias Codenames.Server.Board
 alias Codenames.Server.Manager
 alias Codenames.Server.Server
-alias Codenames.Server.Match
+alias Codenames.Games.Board
+alias Codenames.Game
 alias Codenames.Repo
 alias Codenames.Words
+alias Codenames.Games.GameSchema
 
 email = "Jp9K9@example.com"
 
-board = %Codenames.Server.Board{
+board = %Codenames.Games.Board.BoardSchema{
   starting_team: :red,
-  blue_team: %Codenames.Server.Team{
+  blue_team: %Codenames.Games.Team.TeamSchema{
     words: ["Zumbi", "Rosa", "Bola", "Xícara", "Dado", "Urso", "Navio", "Elefante"],
     players: [],
     spymaster: nil
   },
-  red_team: %Codenames.Server.Team{
+  red_team: %Codenames.Games.Team.TeamSchema{
     words: ["Laranja", "Jogo", "Faca", "Ferro", "Janela", "Queijo", "Ninho", "Hospedagem", "Rato"],
     players: [],
     spymaster: nil
@@ -49,4 +50,37 @@ board = %Codenames.Server.Board{
     %{color: :neutral, revealed: false, word: "Jardim"},
     %{color: :blue, revealed: false, word: "Urso"}
   ]
+}
+
+game = %{
+  room_id: "5608a55d-e8a9-4625-ad51-6aaf1d8a0242",
+  board: %{
+    starting_team: "blue",
+    blue_team: %{
+      words: [
+        "Sapato",
+        "Abóbora",
+        "Dinossauro",
+        "Xadrez",
+        "Ovelha",
+        "Bola",
+        "Mamão",
+        "Zumbi",
+        "Elefante"
+      ],
+      players: [],
+      spymaster: "user"
+    },
+    red_team: %{
+      words: ["Ornamento", "Mamão", "Igreja", "Ketchup", "Lobo", "Dente", "Rosa", "Pássaro"],
+      players: [],
+      spymaster: "user3"
+    },
+    words: [
+      %{color: "neutral", revealed: false, word: "Sapato"}
+    ]
+  },
+  admin_id: "5ec4bcbb-18c4-4326-b799-cf74c10bc0f4",
+  status: "finish",
+  round: 0
 }

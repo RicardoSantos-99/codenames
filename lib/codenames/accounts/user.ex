@@ -15,7 +15,7 @@ defmodule Codenames.Accounts.User do
     field(:hashed_password, :string, redact: true)
     field(:confirmed_at, :naive_datetime)
 
-    has_many(:rooms, Room)
+    has_many(:created_rooms, Room)
 
     many_to_many(:rooms, Room, join_through: "users_rooms")
     timestamps()

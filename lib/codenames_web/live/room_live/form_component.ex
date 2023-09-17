@@ -3,6 +3,7 @@ defmodule CodenamesWeb.RoomLive.FormComponent do
 
   alias Codenames.Rooms
   alias Codenames.Repo
+  alias Ecto.Changeset
 
   @impl true
   def render(assigns) do
@@ -62,7 +63,7 @@ defmodule CodenamesWeb.RoomLive.FormComponent do
          |> put_flash(:info, "Room updated successfully")
          |> push_patch(to: socket.assigns.patch)}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end
   end
@@ -77,12 +78,12 @@ defmodule CodenamesWeb.RoomLive.FormComponent do
          |> put_flash(:info, "Room created successfully")
          |> push_patch(to: socket.assigns.patch)}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end
   end
 
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+  defp assign_form(socket, %Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
   end
 

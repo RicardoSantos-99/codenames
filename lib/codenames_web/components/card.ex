@@ -5,8 +5,8 @@ defmodule CodenamesWeb.Components.Card do
 
   """
   use Phoenix.Component
-  require Codenames.Server.Board
-  alias Codenames.Server.Board
+  require Codenames.Games.Board
+  alias Codenames.Games.Board
 
   def card(assigns) do
     ~L"""
