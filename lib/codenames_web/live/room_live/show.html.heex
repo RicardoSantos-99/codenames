@@ -1,25 +1,28 @@
-<.header>
-  <:actions>
-    <.link patch={~p"/rooms/#{@room}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit room</.button>
-    </.link>
-  </:actions>
-  <:actions>
-    <.button phx-click={JS.push("start")}>start</.button>
-  </:actions>
-</.header>
+<.container max_width="xl">
+  <.header class="pb-1">
+    <%= @room.name %>
+    <:actions>
+      <.link patch={~p"/rooms/#{@room}/show/edit"} phx-click={JS.push_focus()}>
+        <.button>Edit room</.button>
+      </.link>
+    </:actions>
+    <:actions>
+      <.button phx-click={JS.push("start")}>start</.button>
+    </:actions>
+  </.header>
 
-<div class="flex w-4/5 m-4">
-  <.team board={@board} user={@current_user} team="blue" />
-  <.card board={@board} user={@current_user} id="card" module={Card}></.card>
-  <.team board={@board} user={@current_user} team="red" />
-</div>
+  <.container max_width="full" class="flex justify-between items-start px-0">
+    <.team board={@board} user={@current_user} team="blue" />
+    <.card board={@board} user={@current_user} id="card" />
+    <.team board={@board} user={@current_user} team="red" />
+  </.container>
 
-<.back navigate={~p"/rooms"}>Back to rooms</.back>
+  <.back navigate={~p"/rooms"}>Back to rooms</.back>
+</.container>
 
 <.modal :if={@live_action == :edit} id="room-modal" show on_cancel={JS.patch(~p"/rooms/#{@room}")}>
   <.live_component
-    module={CodenamesWeb.RoomLive.FormComponent}
+    module={FormComponent}
     id={@room.id}
     title={@page_title}
     action={@live_action}

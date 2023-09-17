@@ -44,6 +44,9 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
 
+      - name: Install dependencies
+        run: mix deps.get
+
       - name: Check Formatting
         run: mix format --check-formatted
 
@@ -57,9 +60,6 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         continue-on-error: true
-
-      - name: Install dependencies
-        run: mix deps.get
 
       - name: Create and migrate database
         run: |

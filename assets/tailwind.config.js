@@ -4,17 +4,36 @@
 const plugin = require("tailwindcss/plugin")
 const fs = require("fs")
 const path = require("path")
+const colors = require("tailwindcss/colors")
 
 module.exports = {
   content: [
     "./js/**/*.js",
     "../lib/*_web.ex",
-    "../lib/*_web/**/*.*ex"
+    "../lib/*_web/**/*.*ex",
+    "../deps/petal_components/**/*.*ex",
+
   ],
   theme: {
     extend: {
       colors: {
         brand: "#FD4F00",
+        primary: colors.blue,
+        secondary: colors.pink,
+        success: colors.green,
+        danger: colors.red,
+        warning: colors.yellow,
+        info: colors.sky,
+        'card-blue': '#00a7c0',
+        'card-orange': '#e95722',
+        'card-gray': '#f5d9b6',
+        'team-red': '#8f2b1c',
+        'team-blue': '#3284a3' 
+
+
+
+        // // Options: slate, gray, zinc, neutral, stone
+        // gray: colors.gray,
       }
     },
   },

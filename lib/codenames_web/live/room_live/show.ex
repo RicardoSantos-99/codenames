@@ -2,6 +2,7 @@ defmodule CodenamesWeb.RoomLive.Show do
   use CodenamesWeb, :live_view
 
   import CodenamesWeb.Components.{Card, Team}
+  alias CodenamesWeb.RoomLive.FormComponent
 
   alias CodenamesWeb.Presence
   alias Codenames.Server.{Manager, Server}

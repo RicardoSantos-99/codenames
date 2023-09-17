@@ -10,7 +10,7 @@ defmodule CodenamesWeb.Components.Team do
 
   def team(assigns) do
     ~L"""
-      <div class="w-1/4 p-2">
+      <div class="w-1/4">
         <div class="<%= color_class(String.to_atom(@team)) %> rounded-lg shadow-md p-4">
           <h2 class="text-xl font-bold text-white">Time <%= String.capitalize(@team) %></h2>
           <%= if @team == "blue", do: Enum.count(@board.blue_team.words), else: Enum.count(@board.red_team.words) %>
@@ -46,8 +46,8 @@ defmodule CodenamesWeb.Components.Team do
     """
   end
 
-  defp color_class(:red), do: "bg-red-400"
-  defp color_class(:blue), do: "bg-blue-400"
+  defp color_class(:red), do: "bg-team-red"
+  defp color_class(:blue), do: "bg-team-blue"
   defp faces, do: ["😀", "😂", "🤠"]
 
   defp join_spymaster(board, "blue") do

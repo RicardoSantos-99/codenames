@@ -90,6 +90,29 @@ defmodule CodenamesWeb do
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
+      import PetalComponents.{
+        Alert,
+        Badge,
+        # Button,
+        Container,
+        Dropdown,
+        Form,
+        Loading,
+        Typography,
+        Avatar,
+        Progress,
+        Breadcrumbs,
+        Pagination,
+        # Link,
+        # Modal,
+        SlideOver,
+        Tabs,
+        # Card,
+        # Table,
+        Accordion,
+        Icon
+      }
+
       # Routes generation with the ~p sigil
       unquote(verified_routes())
     end
