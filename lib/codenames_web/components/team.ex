@@ -6,7 +6,7 @@ defmodule CodenamesWeb.Components.Team do
   """
   use Phoenix.Component
 
-  alias Codenames.Server.Board
+  alias Codenames.Games.Board
 
   def team(assigns) do
     ~L"""

@@ -6,7 +6,7 @@ defmodule Codenames.Games do
   import Ecto.Query, warn: false
   alias Codenames.Repo
 
-  alias Codenames.Games.Game
+  alias Codenames.Games.GameSchema, as: Game
 
   @doc """
   Returns the list of games.

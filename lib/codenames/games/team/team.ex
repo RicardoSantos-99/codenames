@@ -1,17 +1,7 @@
-defmodule Codenames.Server.Team do
+defmodule Codenames.Games.Team do
   @moduledoc """
-  Team struct
+  Team context
   """
-  defstruct [:words, :players, :spymaster]
-
-  def new(words, players \\ []) do
-    %__MODULE__{
-      words: words,
-      players: players,
-      spymaster: nil
-    }
-  end
-
   def add_spymaster(team, spymaster) do
     %{team | spymaster: spymaster}
   end

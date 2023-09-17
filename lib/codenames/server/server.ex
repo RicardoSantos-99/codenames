@@ -4,30 +4,36 @@ defmodule Codenames.Server.Server do
   """
   use GenServer
 
-  alias Codenames.Server.Match
-  alias Codenames.Server.Board
+  alias Codenames.Games.Board.BoardSchema
+  alias Codenames.Games.Board
+  alias Codenames.Games.GameSchema
+  alias Codenames.Game
   alias Codenames.GameRegistry
 
-  def start_link([room_id, email, %Board{} = board]) do
-    initial_match = Match.new(room_id, email, board)
+  def start_link([room_id, email, %BoardSchema{} = board]) do
+    game = %GameSchema{
+      room_id: room_id,
+      admin: email,
+      board: board
+    }
 
-    GenServer.start_link(__MODULE__, initial_match, name: via_tuple(room_id))
+    GenServer.start_link(__MODULE__, game, name: via_tuple(room_id))
   end
 
-  def init(match), do: {:ok, match}
+  def init(game), do: {:ok, game}
 
-  def handle_call({:join, email}, _from, match) do
-    if Board.already_on_match?(match.board, email) do
-      {:reply, match, match}
+  def handle_call({:join, email}, _from, game) do
+    if Board.already_on_match?(game.board, email) do
+      {:reply, game, game}
     else
-      match = Match.join(match, email)
-      {:reply, match, match}
+      game = Game.join(game, email)
+      {:reply, game, game}
     end
   end
 
-  def handle_call({:start_game, email}, _from, match) do
-    match = Match.start_match(match, email)
-    {:reply, match, match}
+  def handle_call({:start_game, email}, _from, game) do
+    game = Game.start(game, email)
+    {:reply, game, game}
   end
 
   def handle_call(:get_state, _from, state) do

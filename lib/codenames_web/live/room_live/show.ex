@@ -3,8 +3,11 @@ defmodule CodenamesWeb.RoomLive.Show do
 
   import CodenamesWeb.Components.{Card, Team}
 
-  alias CodenamesWeb.{Presence}
-  alias Codenames.Server.{Board, Server, Match, Manager}
+  alias CodenamesWeb.Presence
+  alias Codenames.Server.{Manager, Server}
+  alias Codenames.Games.Board
+  alias Codenames.Games.GameSchema
+  alias Codenames.Games.Board.BoardSchema
   alias Phoenix.Socket.Broadcast
   alias Phoenix.PubSub
   alias Codenames.Rooms
@@ -87,12 +90,12 @@ defmodule CodenamesWeb.RoomLive.Show do
   def start_game(room_id, user) do
     case Server.server_exists?(room_id) do
       true ->
-        %Match{board: board} = Server.join(room_id, user.email)
+        %GameSchema{board: board} = Server.join(room_id, user.email)
         update_board(room_id, board)
         board
 
       false ->
-        %Board{} = board = Board.build_game_board()
+        %BoardSchema{} = board = Board.build_game_board()
 
         Manager.start_server(room_id, user.email, board)
         board
