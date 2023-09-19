@@ -2,9 +2,9 @@ defmodule Codenames.Games.GameSchema do
   @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
+  alias Codenames.Accounts.User
   alias Codenames.Games.Board.BoardSchema
   alias Codenames.Rooms.Room
-  alias Codenames.Accounts.User
 
   @required_params [:round, :status, :admin_id, :room_id]
 
@@ -12,8 +12,8 @@ defmodule Codenames.Games.GameSchema do
   @foreign_key_type :binary_id
   schema "games" do
     embeds_one :board, BoardSchema
-    field :round, :integer
-    field :status, :string
+    field :round, :integer, default: 0
+    field :status, :string, default: ""
     field :players, {:array, :string}, default: [], virtual: true
     belongs_to :admin, User
     belongs_to :room, Room

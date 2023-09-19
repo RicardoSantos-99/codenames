@@ -4,29 +4,26 @@ defmodule CodenamesWeb.RoomLive.Show do
   import CodenamesWeb.Components.{Card, Team}
   alias CodenamesWeb.RoomLive.FormComponent
 
+  alias Codenames.Rooms
   alias CodenamesWeb.Presence
   alias Codenames.Server.{Manager, Server}
-  alias Codenames.Games.Board
-  alias Codenames.Games.GameSchema
-  alias Codenames.Games.Board.BoardSchema
-  alias Phoenix.Socket.Broadcast
   alias Phoenix.PubSub
-  alias Codenames.Rooms
+  alias Phoenix.Socket.Broadcast
 
   @impl true
   def mount(%{"id" => room_id}, _session, socket) do
     user = socket.assigns.current_user
     topic = "game_room:#{room_id}"
 
-    board = start_game(topic, user)
+    game = start_game(topic, user)
 
     PubSub.subscribe(Codenames.PubSub, topic)
-    Presence.track(self(), topic, user.email, user)
+    Presence.track(self(), topic, user.username, user)
 
     socket =
       socket
       |> assign(:user_emails, [])
-      |> assign(:board, board)
+      |> assign(:game, game)
       |> assign(:topic, topic)
       |> assign(:page_title, page_title(socket.assigns.live_action))
       |> assign(:room, Rooms.get_room!(room_id))
@@ -44,22 +41,22 @@ defmodule CodenamesWeb.RoomLive.Show do
 
   @impl true
   def handle_event("spymaster", %{"team" => team}, socket) do
-    user = socket.assigns.current_user
+    %{current_user: user, topic: topic} = socket.assigns
 
-    board = Board.join_spymaster(socket.assigns.board, user.email, String.to_atom(team))
-    update_board(socket.assigns.topic, board)
+    game = Server.join_spymaster(topic, user.username, String.to_atom(team))
+    update_board(topic, game.board)
 
-    {:noreply, socket |> assign(:board, board)}
+    {:noreply, socket |> assign(:game, game)}
   end
 
   @impl true
   def handle_event("operative", %{"team" => team}, socket) do
-    user = socket.assigns.current_user
+    %{current_user: user, topic: topic} = socket.assigns
 
-    board = Board.join_operative(socket.assigns.board, user.email, String.to_atom(team))
+    game = Server.join_operative(topic, user.username, String.to_atom(team))
 
-    update_board(socket.assigns.topic, board)
-    {:noreply, socket |> assign(:board, board)}
+    update_board(topic, game.board)
+    {:noreply, socket |> assign(:game, game)}
   end
 
   def handle_event("start", _params, socket) do
@@ -71,13 +68,14 @@ defmodule CodenamesWeb.RoomLive.Show do
   def handle_info(%Broadcast{event: "presence_diff", payload: _payload, topic: _topic}, socket) do
     users =
       Presence.list(socket.assigns.topic)
-      |> Enum.map(fn {_user_id, data} -> List.first(data[:metas]).email end)
+      |> Enum.map(fn {_user_id, data} -> List.first(data[:metas]).username end)
 
     {:noreply, socket |> assign(:user_emails, users)}
   end
 
   def handle_info({:update_board, board}, socket) do
-    {:noreply, socket |> assign(:board, board)}
+    game = %{socket.assigns.game | board: board}
+    {:noreply, socket |> assign(:game, game)}
   end
 
   def handle_info(_, socket) do
@@ -91,15 +89,14 @@ defmodule CodenamesWeb.RoomLive.Show do
   def start_game(room_id, user) do
     case Server.server_exists?(room_id) do
       true ->
-        %GameSchema{board: board} = Server.join(room_id, user.email)
-        update_board(room_id, board)
-        board
+        game = Server.join(room_id, user.username)
+
+        update_board(room_id, game.board)
+        game
 
       false ->
-        %BoardSchema{} = board = Board.build_game_board()
-
-        Manager.start_server(room_id, user.email, board)
-        board
+        Manager.start_server(room_id, user.username)
+        Server.get_state(room_id)
     end
   end
 

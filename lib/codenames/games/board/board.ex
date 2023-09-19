@@ -2,10 +2,10 @@ defmodule Codenames.Games.Board do
   @moduledoc """
   Board context
   """
-  alias Codenames.Words
   alias Codenames.Games.Board.BoardSchema
-  alias Codenames.Games.Team.TeamSchema
   alias Codenames.Games.Team
+  alias Codenames.Games.Team.TeamSchema
+  alias Codenames.Words
 
   defguard is_blue_team_smaller(board)
            when length(board.blue_team.players) <= length(board.red_team.players)
@@ -37,73 +37,74 @@ defmodule Codenames.Games.Board do
     }
   end
 
-  def add_player_to_team_with_fewer_players(board, email) when is_blue_team_smaller(board) do
-    %{board | blue_team: Team.add_player(board.blue_team, email)}
+  def add_player_to_team_with_fewer_players(board, username) when is_blue_team_smaller(board) do
+    %{board | blue_team: Team.add_player(board.blue_team, username)}
   end
 
-  def add_player_to_team_with_fewer_players(board, email) do
-    %{board | red_team: Team.add_player(board.red_team, email)}
+  def add_player_to_team_with_fewer_players(board, username) do
+    %{board | red_team: Team.add_player(board.red_team, username)}
   end
 
-  def join_spymaster(board, email, team_color) when team_color in [:blue, :red] do
+  def join_spymaster(board, username, team_color) when team_color in [:blue, :red] do
     opposing_team = get_opposing_team(board, team_color)
     current_team = get_current_team(board, team_color)
 
-    case Team.player_is_spymaster?(opposing_team, email) || not is_nil(current_team.spymaster) do
+    case Team.player_is_spymaster?(opposing_team, username) || not is_nil(current_team.spymaster) do
       true -> board
-      false -> assign_spymaster_to_team(board, current_team, email, team_color)
+      false -> assign_spymaster_to_team(board, current_team, username, team_color)
     end
   end
 
-  def join_operative(board, email, team_color) when team_color in [:blue, :red] do
+  def join_operative(board, username, team_color) when team_color in [:blue, :red] do
     team = get_current_team(board, team_color)
 
-    case Team.already_in_team?(team, email) || already_with_spymaster?(board, email) do
+    case Team.already_in_team?(team, username) || already_with_spymaster?(board, username) do
       true -> board
-      false -> assign_operative_to_team(board, team, email, team_color)
+      false -> assign_operative_to_team(board, team, username, team_color)
     end
   end
 
-  def already_on_match?(board, email) do
-    already_with_operative?(board, email) || already_with_spymaster?(board, email)
+  def already_on_match?(board, username) do
+    already_with_operative?(board, username) || already_with_spymaster?(board, username)
   end
 
-  def already_with_operative?(board, email) do
-    Enum.member?(board.blue_team.players, email) || Enum.member?(board.red_team.players, email)
+  def already_with_operative?(board, username) do
+    Enum.member?(board.blue_team.players, username) ||
+      Enum.member?(board.red_team.players, username)
   end
 
-  def already_with_spymaster?(%BoardSchema{red_team: red, blue_team: blue}, email) do
-    Team.player_is_spymaster?(red, email) || Team.player_is_spymaster?(blue, email)
+  def already_with_spymaster?(%BoardSchema{red_team: red, blue_team: blue}, username) do
+    Team.player_is_spymaster?(red, username) || Team.player_is_spymaster?(blue, username)
   end
 
-  defp assign_operative_to_team(board, _team, email, :blue) do
-    remove_player_from_both_teams(board, email)
-    |> Map.update!(:blue_team, &Team.add_player(&1, email))
+  defp assign_operative_to_team(board, _team, username, :blue) do
+    remove_player_from_both_teams(board, username)
+    |> Map.update!(:blue_team, &Team.add_player(&1, username))
   end
 
-  defp assign_operative_to_team(board, _team, email, :red) do
-    remove_player_from_both_teams(board, email)
-    |> Map.update!(:red_team, &Team.add_player(&1, email))
+  defp assign_operative_to_team(board, _team, username, :red) do
+    remove_player_from_both_teams(board, username)
+    |> Map.update!(:red_team, &Team.add_player(&1, username))
   end
 
-  defp assign_spymaster_to_team(board, _team, email, :blue) do
-    remove_player_from_both_teams(board, email)
-    |> Map.update!(:blue_team, &Team.add_spymaster(&1, email))
+  defp assign_spymaster_to_team(board, _team, username, :blue) do
+    remove_player_from_both_teams(board, username)
+    |> Map.update!(:blue_team, &Team.add_spymaster(&1, username))
   end
 
-  defp assign_spymaster_to_team(board, _team, email, :red) do
-    remove_player_from_both_teams(board, email)
-    |> Map.update!(:red_team, &Team.add_spymaster(&1, email))
+  defp assign_spymaster_to_team(board, _team, username, :red) do
+    remove_player_from_both_teams(board, username)
+    |> Map.update!(:red_team, &Team.add_spymaster(&1, username))
   end
 
-  def remove_player_from_both_teams(board, email) do
+  def remove_player_from_both_teams(board, username) do
     board
-    |> remove_player_from_team(:blue_team, email)
-    |> remove_player_from_team(:red_team, email)
+    |> remove_player_from_team(:blue_team, username)
+    |> remove_player_from_team(:red_team, username)
   end
 
-  defp remove_player_from_team(board, team_key, email) do
-    Map.update!(board, team_key, &Team.remove_player(&1, email))
+  defp remove_player_from_team(board, team_key, username) do
+    Map.update!(board, team_key, &Team.remove_player(&1, username))
   end
 
   def get_opposing_team(%{red_team: red}, :blue), do: red

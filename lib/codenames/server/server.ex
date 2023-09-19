@@ -4,32 +4,21 @@ defmodule Codenames.Server.Server do
   """
   use GenServer
 
-  alias Codenames.Games.Board.BoardSchema
-  alias Codenames.Games.Board
-  alias Codenames.Games.GameSchema
   alias Codenames.Game
   alias Codenames.GameRegistry
+  alias Codenames.Games.{Board, GameSchema}
 
-  def start_link([room_id, email, %BoardSchema{} = board]) do
+  def start_link([room_id, email]) do
     game = %GameSchema{
       room_id: room_id,
       admin: email,
-      board: board
+      board: Board.build_game_board()
     }
 
     GenServer.start_link(__MODULE__, game, name: via_tuple(room_id))
   end
 
   def init(game), do: {:ok, game}
-
-  def handle_call({:join, email}, _from, game) do
-    if Board.already_on_match?(game.board, email) do
-      {:reply, game, game}
-    else
-      game = Game.join(game, email)
-      {:reply, game, game}
-    end
-  end
 
   def handle_call({:start_game, email}, _from, game) do
     game = Game.start(game, email)
@@ -40,8 +29,36 @@ defmodule Codenames.Server.Server do
     {:reply, state, state}
   end
 
-  def join(room_id, email) do
-    GenServer.call(via_tuple(room_id), {:join, email})
+  def handle_call({:join, username}, _from, game) do
+    if Board.already_on_match?(game.board, username) do
+      {:reply, game, game}
+    else
+      {:reply, game, game}
+    end
+  end
+
+  def handle_call({:join_spymaster, username, team_color}, _from, game) do
+    game = %{game | board: Board.join_spymaster(game.board, username, team_color)}
+
+    {:reply, game, game}
+  end
+
+  def handle_call({:join_operative, username, team_color}, _from, game) do
+    game = %{game | board: Board.join_operative(game.board, username, team_color)}
+
+    {:reply, game, game}
+  end
+
+  def join(room_id, username) do
+    GenServer.call(via_tuple(room_id), {:join, username})
+  end
+
+  def join_spymaster(room_id, username, team_color) do
+    GenServer.call(via_tuple(room_id), {:join_spymaster, username, team_color})
+  end
+
+  def join_operative(room_id, username, team_color) do
+    GenServer.call(via_tuple(room_id), {:join_operative, username, team_color})
   end
 
   def start_game(room_id, email) do

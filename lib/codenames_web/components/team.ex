@@ -10,37 +10,32 @@ defmodule CodenamesWeb.Components.Team do
 
   def team(assigns) do
     ~L"""
-      <div class="w-1/4">
-        <div class="<%= color_class(String.to_atom(@team)) %> rounded-lg shadow-md p-4">
-          <h2 class="text-xl font-bold text-white">Time <%= String.capitalize(@team) %></h2>
-          <%= if @team == "blue", do: Enum.count(@board.blue_team.words), else: Enum.count(@board.red_team.words) %>
-          <div class="mt-4">
-            <button phx-click="spymaster" phx-value-team="<%= @team %>" <%= disable_when_player_is_spymaster(@board, @user.email) %>>
-              <h3 class="text-lg font-bold text-white underline">
-                Spymaster
-              </h3>
-            </button>
-            <p class="text-white"><%= join_spymaster(@board, @team) %></p>
-          </div>
-          <div class="mt-4">
-            <button phx-click="operative" phx-value-team="<%= @team %>" <%= disable_when_player_is_spymaster(@board, @user.email) %>>
-              <h3 class="text-lg font-bold text-white underline">
-                Operatives
-              </h3>
-            </button>
-            <ul>
-              <%= if @team == "blue" do
-                for _ <- @board.blue_team.players do
-                    Enum.random(faces())
-                end
-                else
-                  for _ <- @board.red_team.players do
-                    Enum.random(faces())
-                  end
-                end
-                %>
-            </ul>
-          </div>
+      <div class="w-1/4 <%= color_class(String.to_atom(@name)) %> rounded-lg shadow-md p-4">
+        <h2 class="text-xl font-bold text-white">Time <%= String.capitalize(@name) %></h2>
+        <%= Enum.count(@team.words)%>
+        <div class="mt-4">
+          <button
+            phx-click="spymaster" phx-value-team="<%= @name %>"
+            <%= disable_when_player_is_spymaster(@board, @user.username) %>
+          >
+            <h3 class="text-lg font-bold text-white underline">
+              Spymaster
+            </h3>
+          </button>
+          <p class="text-white"><%= @team.spymaster %></p>
+        </div>
+        <div class="mt-4">
+          <button
+            phx-click="operative" phx-value-team="<%= @name %>"
+            <%= disable_when_player_is_spymaster(@board, @user.username) %>
+          >
+            <h3 class="text-lg font-bold text-white underline">Operatives</h3>
+          </button>
+          <ul>
+            <%= for username <- @team.players do %>
+              <%= username %>
+            <% end %>
+          </ul>
         </div>
       </div>
     """
@@ -48,19 +43,8 @@ defmodule CodenamesWeb.Components.Team do
 
   defp color_class(:red), do: "bg-team-red"
   defp color_class(:blue), do: "bg-team-blue"
-  defp faces, do: ["😀", "😂", "🤠"]
 
-  defp join_spymaster(board, "blue") do
-    if board.blue_team.spymaster, do: "🤖", else: ""
-  end
-
-  defp join_spymaster(board, "red") do
-    if board.red_team.spymaster, do: "🤖", else: ""
-  end
-
-  defp join_spymaster(_, _), do: ""
-
-  defp disable_when_player_is_spymaster(board, email) do
-    if Board.already_with_spymaster?(board, email), do: "disabled", else: ""
+  defp disable_when_player_is_spymaster(board, username) do
+    if Board.already_with_spymaster?(board, username), do: "disabled", else: ""
   end
 end

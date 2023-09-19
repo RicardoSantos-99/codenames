@@ -3,8 +3,8 @@ defmodule Codenames.Game do
   game context
   """
 
-  alias Codenames.Games.GameSchema
   alias Codenames.Games.Board
+  alias Codenames.Games.GameSchema
 
   defguard is_admin?(game, email) when game.admin == email
 

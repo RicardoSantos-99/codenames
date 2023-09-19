@@ -6,7 +6,7 @@ defmodule Codenames.Accounts do
   import Ecto.Query, warn: false
   alias Codenames.Repo
 
-  alias Codenames.Accounts.{User, UserToken, UserNotifier}
+  alias Codenames.Accounts.{User, UserNotifier, UserToken}
 
   ## Database getters
 

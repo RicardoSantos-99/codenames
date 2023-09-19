@@ -1,10 +1,10 @@
 defmodule CodenamesWeb.UserAuthTest do
   use CodenamesWeb.ConnCase, async: true
 
-  alias Phoenix.LiveView
+  import Codenames.AccountsFixtures
   alias Codenames.Accounts
   alias CodenamesWeb.UserAuth
-  import Codenames.AccountsFixtures
+  alias Phoenix.LiveView
 
   @remember_me_cookie "_codenames_web_user_remember_me"
 

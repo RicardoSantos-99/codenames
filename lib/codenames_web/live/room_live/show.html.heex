@@ -12,9 +12,9 @@
   </.header>
 
   <.container max_width="full" class="flex justify-between items-start px-0">
-    <.team board={@board} user={@current_user} team="blue" />
-    <.card board={@board} user={@current_user} id="card" />
-    <.team board={@board} user={@current_user} team="red" />
+    <.team board={@game.board} team={@game.board.blue_team} user={@current_user} name="blue" />
+    <.card board={@game.board} user={@current_user} id="card" />
+    <.team board={@game.board} team={@game.board.red_team} user={@current_user} name="red" />
   </.container>
 
   <.back navigate={~p"/rooms"}>Back to rooms</.back>

@@ -22,7 +22,7 @@ defmodule Codenames.GamesFixtures do
     game
   end
 
-  def board_fixture() do
+  def board_fixture do
     %{
       starting_team: "blue",
       blue_team: %{

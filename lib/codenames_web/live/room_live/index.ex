@@ -1,9 +1,9 @@
 defmodule CodenamesWeb.RoomLive.Index do
   use CodenamesWeb, :live_view
 
-  alias CodenamesWeb.RoomLive.FormComponent
   alias Codenames.Rooms
   alias Codenames.Rooms.Room
+  alias CodenamesWeb.RoomLive.FormComponent
 
   @impl true
   def mount(_params, _session, socket) do

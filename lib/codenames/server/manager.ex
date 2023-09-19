@@ -22,16 +22,16 @@ defmodule Codenames.Server.Manager do
     }
   end
 
-  def start_server(room_id, email, board) do
-    existing_process(room_id) || start(room_id, email, board)
+  def start_server(room_id, email) do
+    existing_process(room_id) || start(room_id, email)
   end
 
   defp existing_process(room_id) do
     Server.server_exists?(room_id)
   end
 
-  defp start(room_id, email, board) do
-    spec = {Server, [room_id, email, board]}
+  defp start(room_id, email) do
+    spec = {Server, [room_id, email]}
 
     case DynamicSupervisor.start_child(__MODULE__, spec) do
       {:ok, pid} -> pid

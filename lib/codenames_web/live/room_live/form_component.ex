@@ -1,8 +1,8 @@
 defmodule CodenamesWeb.RoomLive.FormComponent do
   use CodenamesWeb, :live_component
 
-  alias Codenames.Rooms
   alias Codenames.Repo
+  alias Codenames.Rooms
   alias Ecto.Changeset
 
   @impl true
