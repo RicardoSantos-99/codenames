@@ -17,7 +17,11 @@
     <.team board={@game.board} team={@game.board.red_team} user={@current_user} name="red" />
   </.container>
 
-  <.back navigate={~p"/rooms"}>Back to rooms</.back>
+  <.back navigate={~p"/rooms"}>
+    <button phx-click="leave_room">
+      Back to rooms
+    </button>
+  </.back>
 </.container>
 
 <.modal :if={@live_action == :edit} id="room-modal" show on_cancel={JS.patch(~p"/rooms/#{@room}")}>

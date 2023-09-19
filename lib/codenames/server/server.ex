@@ -22,6 +22,7 @@ defmodule Codenames.Server.Server do
 
   def handle_call({:start_game, email}, _from, game) do
     game = Game.start(game, email)
+
     {:reply, game, game}
   end
 
@@ -49,6 +50,12 @@ defmodule Codenames.Server.Server do
     {:reply, game, game}
   end
 
+  def handle_call({:leave, username}, _from, game) do
+    game = %{game | board: Board.leave(game.board, username)}
+
+    {:reply, game, game}
+  end
+
   def join(room_id, username) do
     GenServer.call(via_tuple(room_id), {:join, username})
   end
@@ -59,6 +66,10 @@ defmodule Codenames.Server.Server do
 
   def join_operative(room_id, username, team_color) do
     GenServer.call(via_tuple(room_id), {:join_operative, username, team_color})
+  end
+
+  def leave(room_id, username) do
+    GenServer.call(via_tuple(room_id), {:leave, username})
   end
 
   def start_game(room_id, email) do

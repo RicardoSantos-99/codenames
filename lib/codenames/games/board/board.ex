@@ -37,6 +37,43 @@ defmodule Codenames.Games.Board do
     }
   end
 
+  def leave(board, username) do
+    cond do
+      already_with_operative?(board, username) ->
+        remove_player_from_both_teams(board, username)
+
+      already_with_spymaster?(board, username) ->
+        remove_spymaster(board, username)
+
+      true ->
+        board
+    end
+  end
+
+  defp remove_spymaster(board, username) do
+    team_key = spymaster_team_key(board, username)
+
+    update_spymaster_in_board(board, team_key)
+  end
+
+  defp spymaster_team_key(board, username) do
+    cond do
+      Team.player_is_spymaster?(board.blue_team, username) -> :blue_team
+      Team.player_is_spymaster?(board.red_team, username) -> :red_team
+      true -> nil
+    end
+  end
+
+  defp update_spymaster_in_board(board, :blue_team) do
+    %{board | blue_team: Team.remove_spymaster(board.blue_team)}
+  end
+
+  defp update_spymaster_in_board(board, :red_team) do
+    %{board | red_team: Team.remove_spymaster(board.red_team)}
+  end
+
+  defp update_spymaster_in_board(board, _), do: board
+
   def add_player_to_team_with_fewer_players(board, username) when is_blue_team_smaller(board) do
     %{board | blue_team: Team.add_player(board.blue_team, username)}
   end

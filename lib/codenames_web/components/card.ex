@@ -12,9 +12,9 @@ defmodule CodenamesWeb.Components.Card do
     ~L"""
     <div class="grid grid-cols-5 gap-2 px-2">
       <%= for %{word: word, color: color, revealed: _revealed} <- @board.words do %>
-        <div class="w-32 h-32 rounded-lg shadow-md flex items-center justify-center <%= get_color(@board, @user.email, color) %>">
+        <div class="w-32 h-32 rounded-lg shadow-md flex items-center justify-center <%= get_color(@board, @user.username, color) %>">
           <p
-            class="text-sm font-bold uppercase <%= (color == :black && Board.already_with_spymaster?(@board, @user.email)) && "text-white" %>"
+            class="text-sm font-bold uppercase <%= (color == :black && Board.already_with_spymaster?(@board, @user.username)) && "text-white" %>"
           >
             <%= word %>
           </p>

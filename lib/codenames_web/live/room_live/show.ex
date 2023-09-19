@@ -22,7 +22,7 @@ defmodule CodenamesWeb.RoomLive.Show do
 
     socket =
       socket
-      |> assign(:user_emails, [])
+      |> assign(:usernames, [])
       |> assign(:game, game)
       |> assign(:topic, topic)
       |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -44,6 +44,7 @@ defmodule CodenamesWeb.RoomLive.Show do
     %{current_user: user, topic: topic} = socket.assigns
 
     game = Server.join_spymaster(topic, user.username, String.to_atom(team))
+
     update_board(topic, game.board)
 
     {:noreply, socket |> assign(:game, game)}
@@ -60,17 +61,28 @@ defmodule CodenamesWeb.RoomLive.Show do
   end
 
   def handle_event("start", _params, socket) do
-    Server.start_game(socket.assigns.topic, socket.assigns.current_user.email)
-    {:noreply, socket}
+    %{topic: topic, current_user: user} = socket.assigns
+
+    game =
+      Server.start_game(topic, user.username)
+      |> IO.inspect(label: "lib/codenames_web/live/room_live/show.ex:66")
+
+    update_board(topic, game.board)
+
+    {:noreply, socket |> assign(:game, game)}
   end
 
   @impl true
-  def handle_info(%Broadcast{event: "presence_diff", payload: _payload, topic: _topic}, socket) do
+  def handle_info(%Broadcast{event: "presence_diff", payload: payload, topic: _topic}, socket) do
+    topic = socket.assigns.topic
+
+    leave_game(Map.keys(payload.leaves), socket)
+
     users =
-      Presence.list(socket.assigns.topic)
+      Presence.list(topic)
       |> Enum.map(fn {_user_id, data} -> List.first(data[:metas]).username end)
 
-    {:noreply, socket |> assign(:user_emails, users)}
+    {:noreply, socket |> assign(:usernames, users)}
   end
 
   def handle_info({:update_board, board}, socket) do
@@ -80,6 +92,14 @@ defmodule CodenamesWeb.RoomLive.Show do
 
   def handle_info(_, socket) do
     {:noreply, socket}
+  end
+
+  @impl true
+  def terminate({:shutdown, _}, socket) do
+    %{topic: topic, current_user: user} = socket.assigns
+
+    Presence.untrack(self(), topic, user.username)
+    PubSub.unsubscribe(Codenames.PubSub, topic)
   end
 
   def update_board(topic, board) do
@@ -99,6 +119,21 @@ defmodule CodenamesWeb.RoomLive.Show do
         Server.get_state(room_id)
     end
   end
+
+  def leave_game([], socket), do: socket
+
+  def leave_game(users, socket) when socket.assigns.game.status == "waiting" do
+    IO.inspect("leaving")
+
+    users
+    |> Enum.each(fn username ->
+      game = Server.leave(socket.assigns.topic, username)
+
+      update_board(socket.assigns.topic, game.board)
+    end)
+  end
+
+  def leave_game(_, socket), do: socket
 
   defp page_title(:show), do: "Show Room"
   defp page_title(:edit), do: "Edit Room"

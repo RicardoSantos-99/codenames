@@ -13,7 +13,7 @@ defmodule Codenames.Games.GameSchema do
   schema "games" do
     embeds_one :board, BoardSchema
     field :round, :integer, default: 0
-    field :status, :string, default: ""
+    field :status, :string, default: "waiting"
     field :players, {:array, :string}, default: [], virtual: true
     belongs_to :admin, User
     belongs_to :room, Room
