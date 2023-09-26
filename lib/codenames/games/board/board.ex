@@ -10,8 +10,8 @@ defmodule Codenames.Games.Board do
   defguard is_blue_team_smaller(board)
            when length(board.blue_team.players) <= length(board.red_team.players)
 
-  defguard is_spymaster?(board, email)
-           when board.red_team.spymaster == email or board.blue_team.spymaster == email
+  defguard is_spymaster?(board, username)
+           when board.red_team.spymaster == username or board.blue_team.spymaster == username
 
   def build_game_board do
     starting_team = Enum.random([:blue, :red])

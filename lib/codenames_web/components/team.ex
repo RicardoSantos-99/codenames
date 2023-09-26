@@ -10,7 +10,7 @@ defmodule CodenamesWeb.Components.Team do
 
   def team(assigns) do
     ~L"""
-      <div class="w-1/4 <%= color_class(String.to_atom(@name)) %> rounded-lg shadow-md p-4">
+      <div class="w-1/4 card-bg-team-<%= @name %> rounded-lg shadow-md p-4">
         <h2 class="text-xl font-bold text-white">Time <%= String.capitalize(@name) %></h2>
         <%= Enum.count(@team.words)%>
         <div class="mt-4">
@@ -40,9 +40,6 @@ defmodule CodenamesWeb.Components.Team do
       </div>
     """
   end
-
-  defp color_class(:red), do: "bg-team-red"
-  defp color_class(:blue), do: "bg-team-blue"
 
   defp disable_when_player_is_spymaster(board, username) do
     if Board.already_with_spymaster?(board, username), do: "disabled", else: ""

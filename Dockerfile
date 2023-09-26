@@ -88,5 +88,4 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/codenames ./
 
 USER nobody
 
-CMD ["./app/bin/codenames", "eval", "Codenames.Release.migrate", "&&", "./app/bin/codenames", "start"]
-
+CMD ["/app/bin/server"]

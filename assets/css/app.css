@@ -3,3 +3,11 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 /* This file is for your main application CSS */
+
+.card-bg-team-red {
+  background-color: #8f2b1c;
+}
+
+.card-bg-team-blue {
+  background-color: #3284a3;
+}

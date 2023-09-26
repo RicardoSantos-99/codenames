@@ -10,6 +10,7 @@ alias Codenames.Words
 alias Codenames.Games.GameSchema
 
 email = "Jp9K9@example.com"
+topic = "game_room:85462899-b43f-4c15-96a0-f7322b42cd8b"
 
 board = %Codenames.Games.Board.BoardSchema{
   starting_team: :red,
@@ -52,35 +53,57 @@ board = %Codenames.Games.Board.BoardSchema{
   ]
 }
 
-game = %{
-  room_id: "5608a55d-e8a9-4625-ad51-6aaf1d8a0242",
-  board: %{
-    starting_team: "blue",
-    blue_team: %{
-      words: [
-        "Sapato",
-        "Abóbora",
-        "Dinossauro",
-        "Xadrez",
-        "Ovelha",
-        "Bola",
-        "Mamão",
-        "Zumbi",
-        "Elefante"
-      ],
-      players: [],
-      spymaster: "user"
+game = %Codenames.Games.GameSchema{
+  id: nil,
+  board: %Codenames.Games.Board.BoardSchema{
+    id: nil,
+    starting_team: :blue,
+    blue_team: %Codenames.Games.Team.TeamSchema{
+      id: nil,
+      words: ["Ovo", "Umbigo", "Bolacha", "Faca", "Abelha", "Rato", "Zebra", "Zumbi", "Café"],
+      players: ["chrome"],
+      spymaster: "mozila"
     },
-    red_team: %{
-      words: ["Ornamento", "Mamão", "Igreja", "Ketchup", "Lobo", "Dente", "Rosa", "Pássaro"],
-      players: [],
-      spymaster: "user3"
+    red_team: %Codenames.Games.Team.TeamSchema{
+      id: nil,
+      words: ["Quintal", "Rádio", "Igreja", "Vela", "Urso", "Uva", "Faca", "Ovelha"],
+      players: ["anonimo1"],
+      spymaster: "brave"
     },
     words: [
-      %{color: "neutral", revealed: false, word: "Sapato"}
+      %{color: :red, revealed: false, word: "Quintal"},
+      %{color: :blue, revealed: false, word: "Café"},
+      %{color: :blue, revealed: false, word: "Ovo"},
+      %{color: :neutral, revealed: false, word: "Dinossauro"},
+      %{color: :neutral, revealed: false, word: "Ornamento"},
+      %{color: :blue, revealed: false, word: "Umbigo"},
+      %{color: :red, revealed: false, word: "Uva"},
+      %{color: :red, revealed: false, word: "Igreja"},
+      %{color: :neutral, revealed: false, word: "Bolo"},
+      %{color: :red, revealed: false, word: "Vela"},
+      %{color: :neutral, revealed: false, word: "Sorvete"},
+      %{color: :red, revealed: false, word: "Rádio"},
+      %{color: :neutral, revealed: false, word: "Quarto"},
+      %{color: :blue, revealed: false, word: "Faca"},
+      %{color: :blue, revealed: false, word: "Bolacha"},
+      %{color: :red, revealed: false, word: "Faca"},
+      %{color: :red, revealed: false, word: "Urso"},
+      %{color: :neutral, revealed: false, word: "Cachorro"},
+      %{color: :blue, revealed: false, word: "Zebra"},
+      %{color: :blue, revealed: false, word: "Zumbi"},
+      %{color: :blue, revealed: false, word: "Rato"},
+      %{color: :neutral, revealed: false, word: "Rosa"},
+      %{color: :black, revealed: false, word: "Mala"},
+      %{color: :blue, revealed: false, word: "Abelha"},
+      %{color: :red, revealed: false, word: "Ovelha"}
     ]
   },
-  admin_id: "5ec4bcbb-18c4-4326-b799-cf74c10bc0f4",
-  status: "finish",
-  round: 0
+  round: 0,
+  status: "started",
+  players: [],
+  admin_id: nil,
+  admin: "brave",
+  room_id: "game_room:85462899-b43f-4c15-96a0-f7322b42cd8b",
+  inserted_at: nil,
+  updated_at: nil
 }

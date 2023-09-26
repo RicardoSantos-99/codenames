@@ -101,4 +101,18 @@ defmodule Codenames.Games do
   def change_game(%Game{} = game, attrs \\ %{}) do
     Game.changeset(game, attrs)
   end
+
+  def deep_to_map(%_{} = struct) do
+    struct
+    |> Map.from_struct()
+    |> Enum.map(fn
+      {k, %_{} = v} -> {k, deep_to_map(v)}
+      {k, v} when is_list(v) -> {k, Enum.map(v, &deep_to_map(&1))}
+      {k, v} -> {k, v}
+    end)
+    |> Enum.into(%{})
+  end
+
+  def deep_to_map(value) when is_list(value), do: Enum.map(value, &deep_to_map(&1))
+  def deep_to_map(value), do: value
 end

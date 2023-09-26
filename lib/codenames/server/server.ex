@@ -8,10 +8,10 @@ defmodule Codenames.Server.Server do
   alias Codenames.GameRegistry
   alias Codenames.Games.{Board, GameSchema}
 
-  def start_link([room_id, email]) do
+  def start_link([room_id, user]) do
     game = %GameSchema{
       room_id: room_id,
-      admin: email,
+      admin_id: user.id,
       board: Board.build_game_board()
     }
 
@@ -20,22 +20,14 @@ defmodule Codenames.Server.Server do
 
   def init(game), do: {:ok, game}
 
-  def handle_call({:start_game, email}, _from, game) do
-    game = Game.start(game, email)
+  def handle_call({:start_game, username}, _from, game) do
+    game = Game.start(game, username)
 
     {:reply, game, game}
   end
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
-  end
-
-  def handle_call({:join, username}, _from, game) do
-    if Board.already_on_match?(game.board, username) do
-      {:reply, game, game}
-    else
-      {:reply, game, game}
-    end
   end
 
   def handle_call({:join_spymaster, username, team_color}, _from, game) do
@@ -50,16 +42,6 @@ defmodule Codenames.Server.Server do
     {:reply, game, game}
   end
 
-  def handle_call({:leave, username}, _from, game) do
-    game = %{game | board: Board.leave(game.board, username)}
-
-    {:reply, game, game}
-  end
-
-  def join(room_id, username) do
-    GenServer.call(via_tuple(room_id), {:join, username})
-  end
-
   def join_spymaster(room_id, username, team_color) do
     GenServer.call(via_tuple(room_id), {:join_spymaster, username, team_color})
   end
@@ -68,12 +50,8 @@ defmodule Codenames.Server.Server do
     GenServer.call(via_tuple(room_id), {:join_operative, username, team_color})
   end
 
-  def leave(room_id, username) do
-    GenServer.call(via_tuple(room_id), {:leave, username})
-  end
-
-  def start_game(room_id, email) do
-    GenServer.call(via_tuple(room_id), {:start_game, email})
+  def start_game(room_id, username) do
+    GenServer.call(via_tuple(room_id), {:start_game, username})
   end
 
   def get_state(room_id) do

@@ -11,6 +11,8 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - net
 
   elixir_app:
     build:
@@ -25,6 +27,12 @@ services:
       - "4000:4000"
     depends_on:
       - pg
+    networks:
+      - net
 
 volumes:
   pgdata:
+
+networks:
+  net:
+    driver: bridge

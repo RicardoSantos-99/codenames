@@ -13,20 +13,25 @@ defmodule CodenamesWeb.RoomLive.Show do
   @impl true
   def mount(%{"id" => room_id}, _session, socket) do
     user = socket.assigns.current_user
+
     topic = "game_room:#{room_id}"
 
     game = start_game(topic, user)
 
     PubSub.subscribe(Codenames.PubSub, topic)
-    Presence.track(self(), topic, user.username, user)
+
+    Presence.track(self(), topic, user.id, %{
+      name: user.username,
+      joined_at: :os.system_time(:seconds)
+    })
 
     socket =
       socket
-      |> assign(:usernames, [])
       |> assign(:game, game)
       |> assign(:topic, topic)
-      |> assign(:page_title, page_title(socket.assigns.live_action))
-      |> assign(:room, Rooms.get_room!(room_id))
+      |> assign(:current_user, user)
+      |> assign(:users, %{})
+      |> handle_joins(Presence.list(topic))
 
     {:ok, socket}
   end
@@ -63,9 +68,7 @@ defmodule CodenamesWeb.RoomLive.Show do
   def handle_event("start", _params, socket) do
     %{topic: topic, current_user: user} = socket.assigns
 
-    game =
-      Server.start_game(topic, user.username)
-      |> IO.inspect(label: "lib/codenames_web/live/room_live/show.ex:66")
+    game = Server.start_game(topic, user.username)
 
     update_board(topic, game.board)
 
@@ -73,16 +76,13 @@ defmodule CodenamesWeb.RoomLive.Show do
   end
 
   @impl true
-  def handle_info(%Broadcast{event: "presence_diff", payload: payload, topic: _topic}, socket) do
-    topic = socket.assigns.topic
-
-    leave_game(Map.keys(payload.leaves), socket)
-
-    users =
-      Presence.list(topic)
-      |> Enum.map(fn {_user_id, data} -> List.first(data[:metas]).username end)
-
-    {:noreply, socket |> assign(:usernames, users)}
+  def handle_info(%Broadcast{event: "presence_diff", payload: diff}, socket) do
+    {
+      :noreply,
+      socket
+      |> handle_leaves(diff.leaves)
+      |> handle_joins(diff.joins)
+    }
   end
 
   def handle_info({:update_board, board}, socket) do
@@ -94,12 +94,16 @@ defmodule CodenamesWeb.RoomLive.Show do
     {:noreply, socket}
   end
 
-  @impl true
-  def terminate({:shutdown, _}, socket) do
-    %{topic: topic, current_user: user} = socket.assigns
+  defp handle_joins(socket, joins) do
+    Enum.reduce(joins, socket, fn {user, %{metas: [meta | _]}}, socket ->
+      assign(socket, :users, Map.put(socket.assigns.users, user, meta))
+    end)
+  end
 
-    Presence.untrack(self(), topic, user.username)
-    PubSub.unsubscribe(Codenames.PubSub, topic)
+  defp handle_leaves(socket, leaves) do
+    Enum.reduce(leaves, socket, fn {user, _}, socket ->
+      assign(socket, :users, Map.delete(socket.assigns.users, user))
+    end)
   end
 
   def update_board(topic, board) do
@@ -109,13 +113,13 @@ defmodule CodenamesWeb.RoomLive.Show do
   def start_game(room_id, user) do
     case Server.server_exists?(room_id) do
       true ->
-        game = Server.join(room_id, user.username)
+        game = Server.get_state(room_id)
 
         update_board(room_id, game.board)
         game
 
       false ->
-        Manager.start_server(room_id, user.username)
+        Manager.start_server(room_id, user)
         Server.get_state(room_id)
     end
   end
@@ -123,13 +127,12 @@ defmodule CodenamesWeb.RoomLive.Show do
   def leave_game([], socket), do: socket
 
   def leave_game(users, socket) when socket.assigns.game.status == "waiting" do
-    IO.inspect("leaving")
-
     users
-    |> Enum.each(fn username ->
-      game = Server.leave(socket.assigns.topic, username)
+    |> Enum.each(fn _username ->
+      nil
+      # game = Server.leave(socket.assigns.topic, username)
 
-      update_board(socket.assigns.topic, game.board)
+      # update_board(socket.assigns.topic, game.board)
     end)
   end
 

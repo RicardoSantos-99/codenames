@@ -24,11 +24,11 @@ defmodule CodenamesWeb.Components.Card do
     """
   end
 
-  def get_color(board, email, color) when Board.is_spymaster?(board, email) do
+  def get_color(board, username, color) when Board.is_spymaster?(board, username) do
     color_class(color)
   end
 
-  def get_color(_board, _email, _color), do: color_class(:neutral)
+  def get_color(_board, _username, _color), do: color_class(:neutral)
 
   defp color_class(:black), do: "bg-zinc-950"
   defp color_class(:blue), do: "bg-card-blue"
